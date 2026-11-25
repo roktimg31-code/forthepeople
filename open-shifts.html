@@ -1,0 +1,1765 @@
+<title>Open Shifts</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;700;800&family=Figtree:wght@400;500;600;700;800&family=Geist:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: black and white only. A six-scene story on black (white type, white line drawings), then a white site with black line drawings. Register page has a looping line animation of faceless figures helping each other behind two big choices. No accent colour; green and red only show state. */
+:root {
+  --bg: #fbf6ec; --fg: #1b1a17; --muted: #6b6558; --line: #e0d5bf; --soft: #f2ead8;
+  --ok: #2f7d5b; --warn: #b3261e; --intro-bg: #f2b632; --intro-fg: #1b1a17; --focus: #1b1a17;
+  --accent: #c8431f; --c2: #e8a317; --c3: #2f7d5b; --c4: #2f4ea2; --c5: #d9577a;
+  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14120f; --fg: #f6efe0; --muted: #a69f90; --line: #332e25; --soft: #1e1b16;
+    --ok: #5fc296; --warn: #ff8a80; --focus: #f6efe0; --accent: #ff8a5c; --c2: #f5bd3f; --c3: #5fc296; --c4: #8aa3ff; --c5: #f08aa8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14120f; --fg: #f6efe0; --muted: #a69f90; --line: #332e25; --soft: #1e1b16;
+  --ok: #5fc296; --warn: #ff8a80; --focus: #f6efe0; --accent: #ff8a5c; --c2: #f5bd3f; --c3: #5fc296; --c4: #8aa3ff; --c5: #f08aa8;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-block: 0 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.shell { max-width: 980px; margin: 0 auto; }
+
+
+/* illustrations: own drawings, ink + one accent */
+.ill { width: 100%; height: auto; display: block; --ink: var(--fg); --paper: var(--bg); }
+#intro .ill { --ink: #1c1612; --paper: var(--intro-bg); --accent: #ff5a36; --c2: #fffaf0; --c3: #1fa86f; --c4: #2f6fe0; --c5: #e0528a; }
+.ill .in, .ill .sk { fill: none; stroke: var(--ink); stroke-linecap: round; stroke-linejoin: round; }
+.ill .sk2 { fill: none; stroke: var(--paper); stroke-linecap: round; stroke-linejoin: round; }
+.ill .fi { fill: var(--ink); stroke: none; }
+.ill .pa { fill: var(--paper); stroke: var(--ink); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.ill .ac { fill: var(--accent); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.ill .acs { fill: none; stroke: var(--accent); stroke-linecap: round; }
+.ill .ln { fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ill .sa { fill: none; stroke: var(--paper); stroke-width: 1.6; }
+.ill .bob { animation: bob 3.6s ease-in-out infinite; } .ill .b2 { animation-delay: -1.2s; } .ill .b3 { animation-delay: -2.4s; }
+.ill .dog { animation: bob 2.4s ease-in-out infinite; } .ill .wag { transform-box: fill-box; transform-origin: 0 100%; animation: wag .5s ease-in-out infinite alternate; }
+.ill .steam path { animation: steam 2.6s ease-in-out infinite; } .ill .drip { animation: drip 1.7s linear infinite; }
+.ill .grow { transform-box: fill-box; transform-origin: 50% 100%; animation: grow 4s ease-in-out infinite alternate; }
+.ill .twinkle, .ill .winlit { animation: twk 3.4s ease-in-out infinite; }
+.ill .pass { animation: pass 3.4s ease-in-out infinite; } .ill .litter { animation: twk 3s ease-in-out infinite; }
+.ill .sunr { transform-box: fill-box; transform-origin: 50% 50%; animation: sunr 7s ease-in-out infinite alternate; }
+.ill .bridge { stroke-dasharray: 1; animation: brg 4.5s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-3px); } }
+@keyframes wag { to { transform: rotate(14deg); } }
+@keyframes steam { 0% { opacity: 0; transform: translateY(4px); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateY(-6px); } }
+@keyframes drip { 0% { opacity: 0; transform: translateY(-4px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(8px); } }
+@keyframes grow { from { transform: scaleY(.92); } to { transform: scaleY(1.04); } }
+@keyframes twk { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+@keyframes pass { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-14px); } }
+@keyframes sunr { to { transform: scale(1.05); } }
+@keyframes brg { 0% { stroke-dashoffset: 1; } 60%,100% { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .ill * { animation: none !important; } }
+/* avatar, header chip */
+.av { display: inline-grid; place-items: center; border: 1.5px solid var(--fg); border-radius: 50%; font-weight: 600; background: var(--bg); color: var(--fg); flex: none; line-height: 1; }
+.av svg { width: 56%; height: 56%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav a.me-chip { display: inline-flex; align-items: center; gap: 8px; border: 0; padding: 2px 0; color: var(--fg); }
+.nav a.me-chip[aria-current="page"] .av { background: var(--fg); color: var(--bg); }
+.av-pick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.av-pick button { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; display: grid; place-items: center; }
+.av-pick button[aria-pressed="true"] { border: 2px solid var(--fg); background: var(--soft); }
+.av-pick svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* welcome + dashboard */
+.wel { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: center; padding-block: 28px 8px; }
+.wel h1, .dash-h h1 { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 600; letter-spacing: -.04em; line-height: 1.02; }
+.wel p.lead { margin-top: 12px; color: var(--muted); max-width: 40ch; }
+.wel .art { min-width: 0; } .wel .art, .wel .pic { border: 0 !important; background: none !important; padding: 0 !important; }
+.dash-h .stats { display: flex !important; gap: 22px; border: 0 !important; flex-wrap: wrap; } .dash-h .stats > div { border: 0 !important; padding: 0 !important; }
+.card { border: 1px solid var(--fg); padding: 16px 18px; display: grid; gap: 8px; margin-top: 22px; }
+.card h2 { font-size: 1rem; font-weight: 600; }
+.steps { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 10px; counter-reset: st; }
+.steps li { display: flex; gap: 12px; align-items: flex-start; counter-increment: st; }
+.steps li::before { content: counter(st); width: 24px; height: 24px; border: 1px solid var(--fg); border-radius: 50%; display: grid; place-items: center; font-size: .8rem; flex: none; font-family: var(--font-mono); }
+.steps li.done::before { content: "\2713"; background: var(--fg); color: var(--bg); }
+.steps li span { min-width: 0; }
+.dash-h { padding-block: 26px 4px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+.dash-h p { color: var(--muted); margin-top: 6px; }
+.go-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.gocard { border: 1px solid var(--fg); padding: 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.gocard h2 { font-size: 1.4rem; letter-spacing: -.03em; font-weight: 600; }
+.gocard p { color: var(--muted); font-size: .95rem; }
+.gocard .ill { max-height: 150px; }
+.gocard .btn { justify-self: start; }
+.next { border: 1px solid var(--line); background: var(--soft); padding: 14px 16px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+.cat-grid, .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+.cat, .tpl { border: 1px solid var(--line); background: var(--bg); padding: 8px 8px 10px; text-align: left; cursor: pointer; display: grid; gap: 6px; min-width: 0; color: var(--fg); }
+.cat:hover, .tpl:hover { border-color: var(--fg); }
+.cat b, .tpl b { font-size: .95rem; font-weight: 600; } .cat span, .tpl span { color: var(--muted); font-size: .82rem; }
+.tips { margin: 10px 0 0; padding-left: 18px; color: var(--muted); display: grid; gap: 4px; font-size: .92rem; }
+@media (max-width: 720px) { .wel, .go-grid { grid-template-columns: 1fr; } .wel .art { order: -1; max-width: 340px; } }
+
+
+.ill .ac:nth-child(3n+2) { fill: var(--c2); } .ill .ac:nth-child(3n) { fill: var(--c4); } .ill .ac:nth-child(5n+4) { fill: var(--c3); } .ill .ac:nth-child(7n) { fill: var(--c5); }
+.ill .acs:nth-child(2n) { stroke: var(--c4); }
+#intro { transition: opacity .5s, background-color .7s ease; }
+.nav a.cta { background: var(--accent); color: #fff; }
+.gocard:nth-child(1), .cat:nth-child(6n+1), .tpl:nth-child(6n+1) { background: color-mix(in srgb, var(--c2) 24%, var(--bg)); }
+.gocard:nth-child(2), .cat:nth-child(6n+2), .tpl:nth-child(6n+2) { background: color-mix(in srgb, var(--c3) 20%, var(--bg)); }
+.cat:nth-child(6n+3), .tpl:nth-child(6n+3) { background: color-mix(in srgb, var(--c4) 18%, var(--bg)); }
+.cat:nth-child(6n+4), .tpl:nth-child(6n+4) { background: color-mix(in srgb, var(--accent) 16%, var(--bg)); }
+.cat:nth-child(6n+5), .tpl:nth-child(6n+5) { background: color-mix(in srgb, var(--c5) 18%, var(--bg)); }
+.cat:nth-child(6n), .tpl:nth-child(6n) { background: color-mix(in srgb, var(--c2) 24%, var(--bg)); }
+.dash-h .stats b { color: var(--accent); }
+.next { background: color-mix(in srgb, var(--c4) 14%, var(--bg)); border-color: var(--c4); }
+.card { box-shadow: 4px 4px 0 var(--c2); }
+.av { background: color-mix(in srgb, var(--c2) 40%, var(--bg)); }
+
+/* story */
+#intro { position: fixed; inset: 0; z-index: 100; background: var(--intro-bg); color: var(--intro-fg); display: flex; flex-direction: column; padding: 0 max(24px, env(safe-area-inset-left, 0px)); padding-top: env(safe-area-inset-top, 0px); transition: opacity .5s ease; overflow-y: auto; }
+#intro.leave { opacity: 0; pointer-events: none; }
+.i-top { max-width: 1000px; width: 100%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-block: 16px; }
+.i-mark { font-weight: 700; letter-spacing: -.02em; }
+.i-skip { background: none; border: 0; color: var(--intro-fg); opacity: .65; cursor: pointer; padding: 10px 0; font-size: .9rem; text-decoration: underline; text-underline-offset: 3px; }
+.i-skip:hover { opacity: 1; }
+.i-stage { flex: 1; display: flex; align-items: center; max-width: 1000px; width: 100%; margin: 0 auto; }
+.sc { width: 100%; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 36px; align-items: center; padding-block: 12px; }
+.sc .kick { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; opacity: .7; animation: rise .6s ease both; }
+.sc h1 { margin-top: 12px; font-size: clamp(2.1rem, 6.4vw, 3.9rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; animation: reveal .9s cubic-bezier(.2,.7,.2,1) both; }
+.sc.big h1 { font-size: clamp(3rem, 9.5vw, 6rem); letter-spacing: -.06em; line-height: .9; }
+.sc .lead { margin-top: 18px; font-size: clamp(1.05rem, 2.6vw, 1.35rem); max-width: 34ch; opacity: 0; animation: rise .8s ease forwards; animation-delay: var(--d, .5s); }
+.sc ul { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 12px; max-width: 44ch; }
+.sc li { font-size: clamp(1rem, 2.4vw, 1.2rem); padding-left: 22px; position: relative; opacity: 0; animation: rise .7s ease forwards; animation-delay: var(--d); }
+.sc li::before { content: ""; position: absolute; left: 0; top: .62em; width: 10px; height: 1px; background: var(--intro-fg); }
+.sc .art svg { width: 100%; height: auto; color: var(--intro-fg); }
+.sc .art { min-width: 0; }
+.pic { position: relative; display: block; }
+.pic .ill { max-height: min(56vh, 420px); }
+
+.pic.gocard .ill { --p: 0; --ang: 100deg; -webkit-mask-image: linear-gradient(var(--ang), #000 calc(var(--p) * 1% - 14%), transparent calc(var(--p) * 1%)); mask-image: linear-gradient(var(--ang), #000 calc(var(--p) * 1% - 14%), transparent calc(var(--p) * 1%)); animation: wipe 2.2s cubic-bezier(.3,.6,.2,1) var(--d, .2s) forwards, float 8s ease-in-out calc(var(--d, .2s) + 2.2s) infinite; }
+.pic.go.up .ill { --ang: 0deg; } .pic.go.rt .ill { --ang: 260deg; } .pic.go.dn .ill { --ang: 180deg; }
+.pic.go.rad .ill { -webkit-mask-image: radial-gradient(circle at 50% 55%, #000 calc(var(--p) * 1% - 20%), transparent calc(var(--p) * 1%)); mask-image: radial-gradient(circle at 50% 55%, #000 calc(var(--p) * 1% - 20%), transparent calc(var(--p) * 1%)); }
+@property --p { syntax: "<number>"; inherits: false; initial-value: 0; }
+@keyframes wipe { from { --p: 0; } to { --p: 120; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.mosaic { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
+.mosaic figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
+.mosaic .pic .ill { max-height: 170px; }
+.mosaic figcaption { font-size: .82rem; opacity: 0; animation: rise .6s ease forwards; animation-delay: var(--d); }
+.i-btn { margin-top: 28px; min-height: 52px; padding: 12px 30px; border-radius: 4px; border: 1px solid var(--intro-fg); background: var(--intro-fg); color: var(--intro-bg); font-weight: 600; font-size: 1.05rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; opacity: 0; animation: rise .7s ease forwards; animation-delay: var(--d, .9s); }
+.i-btn.ghost { background: transparent; color: var(--intro-fg); margin-left: 10px; }
+.i-nav { max-width: 1000px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px max(18px, env(safe-area-inset-bottom, 0px)); }
+.dots { display: flex; gap: 8px; }
+.dot { width: 28px; height: 3px; background: var(--intro-fg); opacity: .25; border: 0; padding: 0; cursor: pointer; }
+.dot.on { opacity: 1; }
+.i-go { display: flex; gap: 8px; }
+.i-go button { min-height: 44px; padding: 8px 22px; border-radius: 4px; border: 1px solid var(--intro-fg); background: transparent; color: var(--intro-fg); cursor: pointer; font-weight: 500; }
+.i-go button.pri { background: var(--intro-fg); color: var(--intro-bg); font-weight: 600; }
+.i-go button[disabled] { opacity: .3; cursor: default; }
+#intro :focus-visible { outline-color: var(--intro-fg); }
+.drawn path, .drawn rect, .drawn circle { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1s ease forwards; animation-delay: var(--d); }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.brand { font-weight: 700; letter-spacing: -0.02em; text-decoration: none; font-size: 1.1rem; }
+.nav { display: flex; gap: 4px 18px; flex-wrap: wrap; align-items: center; }
+.nav a { text-decoration: none; color: var(--muted); padding: 6px 0; border-bottom: 2px solid transparent; font-size: .95rem; }
+.nav a[aria-current="page"] { color: var(--fg); border-bottom-color: var(--fg); }
+.nav a.cta { color: var(--bg); background: var(--fg); padding: 6px 14px; border-radius: 4px; border: 0; font-weight: 600; }
+
+/* shared */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 8px 18px; border-radius: 4px; border: 1px solid var(--fg); background: var(--fg); color: var(--bg); font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.btn.ghost { background: transparent; color: var(--fg); }
+.btn.sm { min-height: 36px; padding: 4px 12px; font-size: .9rem; }
+.btn.danger { border-color: var(--warn); color: var(--warn); background: transparent; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.link { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; color: var(--muted); }
+.banner { margin-top: 16px; padding: 12px 14px; border: 1px solid var(--line); background: var(--soft); font-size: .9rem; color: var(--muted); }
+.banner.dark { background: var(--fg); color: var(--bg); border-color: var(--fg); display: flex; gap: 12px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.banner.dark .btn { background: var(--bg); color: var(--fg); border-color: var(--bg); }
+.page-h { padding-block: 36px 8px; }
+.page-h h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600; letter-spacing: -0.03em; }
+.page-h p { margin-top: 8px; color: var(--muted); max-width: 56ch; }
+.sec-h { margin-top: 40px; padding-bottom: 8px; border-bottom: 1px solid var(--fg); font-size: .78rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .09em; font-weight: 500; display: flex; justify-content: space-between; gap: 12px; }
+.empty { padding: 36px 0; color: var(--muted); }
+.empty b { color: var(--fg); display: block; margin-bottom: 4px; font-size: 1.05rem; }
+.ico { color: var(--fg); display: inline-flex; flex: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { min-height: 36px; padding: 3px 14px; border-radius: 4px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: .92rem; }
+.chip[aria-pressed="true"] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.panel { grid-column: 1 / -1; border: 1px solid var(--fg); padding: 16px; display: grid; gap: 12px; background: var(--bg); }
+.panel p { font-size: .92rem; color: var(--muted); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; }
+.check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--fg); flex: none; }
+.tags { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { font-size: .75rem; border: 1px solid var(--line); padding: 1px 8px; border-radius: 3px; color: var(--muted); }
+.tag.get { color: var(--fg); border-color: var(--fg); }
+.note { font-size: .85rem; color: var(--muted); }
+.err { color: var(--warn); font-size: .9rem; min-height: 1.3em; }
+
+/* entry (register) */
+.entry { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: center; padding-block: 48px 24px; }
+.entry h1 { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 600; letter-spacing: -.04em; line-height: 1.02; }
+.entry .lead { margin-top: 10px; color: var(--muted); max-width: 40ch; }
+.choose { margin-top: 26px; display: grid; gap: 10px; max-width: 440px; }
+.choice { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; text-decoration: none; padding: 16px 18px; border: 1px solid var(--fg); border-radius: 4px; transition: background .15s ease, color .15s ease; }
+.choice:hover { background: var(--fg); color: var(--bg); }
+.choice b { font-size: 1.1rem; letter-spacing: -.01em; }
+.choice span { grid-column: 1; color: var(--muted); font-size: .9rem; }
+.choice:hover span { color: inherit; opacity: .8; }
+.choice i { grid-column: 2; grid-row: 1 / span 2; font-style: normal; font-size: 1.3rem; }
+.entry .small { margin-top: 16px; font-size: .85rem; color: var(--muted); max-width: 44ch; }
+.entry .art { min-width: 0; }
+.art-lite {  }
+
+/* wizard and forms */
+.prog { display: flex; align-items: center; gap: 6px; padding-top: 28px; }
+.pdot { flex: 1; height: 3px; background: var(--line); max-width: 56px; }
+.pdot.on { background: var(--fg); }
+.prog .mono { margin-left: 10px; font-size: .8rem; color: var(--muted); }
+.wz h2 { margin-top: 18px; font-size: clamp(1.6rem, 4.6vw, 2.2rem); letter-spacing: -.03em; font-weight: 600; }
+.wz .hint { margin-top: 6px; color: var(--muted); max-width: 56ch; }
+.form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; max-width: 720px; }
+.form .full { grid-column: 1 / -1; }
+.form label { display: flex; flex-direction: column; gap: 5px; font-size: .88rem; font-weight: 500; }
+.form small { font-weight: 400; color: var(--muted); }
+.form input:not([type="checkbox"]), .form select, .form textarea { min-height: 44px; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--bg); width: 100%; }
+.form textarea { min-height: 96px; resize: vertical; }
+.form legend { font-size: .88rem; font-weight: 500; padding: 0; margin-bottom: 6px; }
+.form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.sum { display: grid; gap: 0; border-top: 1px solid var(--fg); }
+.sum div { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+.sum dt, .sum span:first-child { color: var(--muted); }
+.sum span { overflow-wrap: anywhere; }
+
+/* hero and rows */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: center; padding-block: 32px 20px; }
+.hero h1 { font-size: clamp(2.3rem, 7vw, 3.8rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; max-width: 11ch; }
+.hero p { margin-top: 16px; color: var(--muted); max-width: 44ch; }
+.hero .art svg { width: 100%; height: auto; color: var(--fg); }
+.figs { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px 32px; }
+.figs div { display: flex; flex-direction: column; }
+.figs b { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 500; letter-spacing: -.02em; }
+.figs span { font-size: .8rem; color: var(--muted); }
+.filters { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 14px; border-top: 1px solid var(--line); }
+.q { flex: 1 1 220px; max-width: 340px; min-height: 40px; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--bg); }
+.day { margin-top: 26px; font-family: var(--font-mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid var(--fg); }
+.row { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 8px 16px; padding-block: 18px; border-bottom: 1px solid var(--line); align-items: start; }
+.row .when { font-size: .82rem; color: var(--muted); }
+.row h3 { font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.row .sub { font-size: .9rem; color: var(--muted); overflow-wrap: anywhere; }
+.row .desc { margin-top: 6px; font-size: .94rem; max-width: 60ch; overflow-wrap: anywhere; }
+.act { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.spots { font-size: .82rem; color: var(--muted); }
+.spots.low { color: var(--warn); }
+.st { font-family: var(--font-mono); font-size: .8rem; }
+.st.ok { color: var(--ok); } .st.bad { color: var(--warn); }
+
+/* profile */
+.id-row { display: flex; gap: 20px; align-items: center; padding-block: 28px 8px; flex-wrap: wrap; }
+.id-row .ico { border: 1px solid var(--fg); padding: 10px; }
+.id-row h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 600; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.id-row p { color: var(--muted); font-size: .94rem; overflow-wrap: anywhere; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border-top: 1px solid var(--fg); border-bottom: 1px solid var(--line); margin-top: 20px; }
+.stats div { padding: 16px 16px 16px 0; display: flex; flex-direction: column; }
+.stats b { font-family: var(--font-mono); font-size: 2.2rem; font-weight: 500; letter-spacing: -.03em; line-height: 1.1; }
+.stats span { font-size: .82rem; color: var(--muted); }
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0; margin-top: 4px; }
+.badge { padding: 18px 12px 18px 0; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; border-bottom: 1px solid var(--line); }
+.badge svg { width: 64px; height: 64px; }
+.badge b { font-size: .95rem; line-height: 1.2; }
+.badge span { font-size: .78rem; color: var(--muted); }
+.badge.off { opacity: .45; }
+.badge.off .ring { stroke-dasharray: 4 4; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: .92rem; }
+th { text-align: left; font-family: var(--font-mono); font-weight: 500; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); }
+td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
+.cert-wrap { margin-top: 16px; border: 1px solid var(--fg); padding: 16px; display: grid; gap: 12px; }
+.cert-paper { background: #ffffff; color: #0a0a0a; line-height: 0; }
+.cert-paper svg { width: 100%; height: auto; display: block; }
+.cardlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); border-top: 1px solid var(--fg); }
+.org { padding: 20px 20px 20px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.org h3 { font-size: 1.1rem; overflow-wrap: anywhere; }
+.org p { font-size: .92rem; color: var(--muted); overflow-wrap: anywhere; }
+.org .m { font-size: .8rem; color: var(--muted); }
+
+/* organiser desk */
+.block { border-bottom: 1px solid var(--line); padding-block: 20px; display: grid; gap: 12px; }
+.block header { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.block h3 { font-size: 1.1rem; overflow-wrap: anywhere; }
+.sub-h { font-family: var(--font-mono); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-top: 6px; }
+.vol { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; padding: 10px 0; border-top: 1px solid var(--line); align-items: center; }
+.vol .n { overflow-wrap: anywhere; }
+.vol .n small { display: block; color: var(--muted); }
+.vol input[type="number"] { width: 64px; min-height: 36px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--bg); }
+.vctl { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.vcard { grid-column: 1 / -1; font-size: .88rem; }
+.vcard summary { cursor: pointer; color: var(--muted); }
+.vcard dl { margin: 8px 0 0; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 4px 12px; }
+.vcard dt { color: var(--muted); } .vcard dd { margin: 0; overflow-wrap: anywhere; }
+/* location picker */
+.loc { grid-column: 1 / -1; display: grid; gap: 12px; }
+.loc .pinrow { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 12px; align-items: end; }
+.loc .verdict { font-size: .92rem; min-height: 1.4em; padding-bottom: 12px; }
+.loc .verdict.ok { color: var(--ok); } .loc .verdict.bad { color: var(--warn); }
+.results { display: grid; border: 1px solid var(--line); max-height: 220px; overflow-y: auto; }
+.results button { text-align: left; padding: 10px 12px; border: 0; border-bottom: 1px solid var(--line); background: var(--bg); cursor: pointer; display: flex; justify-content: space-between; gap: 10px; }
+.results button:last-child { border-bottom: 0; }
+.results button:hover, .results button:focus-visible { background: var(--soft); }
+.results small { color: var(--muted); font-weight: 400; }
+.picked { display: flex; justify-content: space-between; gap: 12px; align-items: center; border: 1px solid var(--fg); padding: 10px 12px; flex-wrap: wrap; }
+
+/* stories */
+.story { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 20px; padding-block: 24px; border-bottom: 1px solid var(--line); }
+.story .pic .ill { max-height: 150px; }
+.story .wk { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.story h2 { margin-top: 4px; font-size: 1.4rem; letter-spacing: -.02em; font-weight: 600; overflow-wrap: anywhere; }
+.story .who { color: var(--muted); font-size: .92rem; margin-top: 2px; }
+.story p.body { margin-top: 10px; max-width: 62ch; overflow-wrap: anywhere; }
+.story p.body + p.body { margin-top: 8px; }
+.week-card { margin-top: 20px; border: 1px solid var(--fg); display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; padding: 16px 18px; align-items: center; text-decoration: none; }
+.week-card .pic .ill { max-height: 110px;  }
+.week-card h3 { font-size: 1.15rem; letter-spacing: -.01em; margin-top: 2px; overflow-wrap: anywhere; }
+.week-card p { color: var(--muted); font-size: .92rem; margin-top: 4px; }
+.week-card .wk { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.admin-note { margin-top: 10px; font-size: .85rem; color: var(--muted); }
+
+.foot { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: .85rem; color: var(--muted); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 18px; border-radius: 4px; font-size: .9rem; z-index: 120; max-width: calc(100vw - 32px); }
+
+@media (max-width: 680px) {
+  .sc, .hero, .opts { grid-template-columns: 1fr; }
+  .sc .art, .hero .art { order: -1; max-width: 300px; }
+  .form { grid-template-columns: 1fr; }
+  .row { grid-template-columns: 40px minmax(0, 1fr); }
+  .act { grid-column: 2; flex-direction: row; align-items: center; justify-content: space-between; }
+  .sum div { grid-template-columns: 1fr; gap: 2px; }
+  .entry { grid-template-columns: 1fr; gap: 20px; padding-top: 28px; }
+  .entry .art { order: -1; max-width: 300px; }
+  .loc .pinrow { grid-template-columns: 1fr; }
+  .story, .week-card { grid-template-columns: 1fr; }
+  .story .pic .ill, .week-card .pic .ill { max-height: 120px; width: auto; }
+  .vcard dl { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc .kick, .sc h1, .sc .lead, .sc li, .i-btn { animation: none; opacity: 1; clip-path: none; }
+  .drawn path, .drawn rect, .drawn circle { animation: none; stroke-dashoffset: 0; }
+  .pic.gocard .ill { animation: none; -webkit-mask-image: none; mask-image: none; }
+  #intro { transition: none; }
+}
+
+/* ===== v7 skin: bold, playful, sticker-like. Same app, new look. ===== */
+:root {
+  --font-display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --font-body: "Figtree", "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg: #fff3d9; --card: #fffdf6; --fg: #1c1612; --muted: #5e5446; --line: #e5d3a8; --soft: #ffe8b8; --sh: #1c1612;
+  --accent: #ff5a36; --c2: #ffc21a; --c3: #3fcf8e; --c4: #4aa3ff; --c5: #ff7fae;
+  --t1: color-mix(in srgb, var(--c2) 70%, var(--card)); --t2: color-mix(in srgb, var(--c3) 55%, var(--card)); --t3: color-mix(in srgb, var(--c4) 45%, var(--card));
+  --t4: color-mix(in srgb, var(--accent) 38%, var(--card)); --t5: color-mix(in srgb, var(--c5) 45%, var(--card));
+  --r: 22px; --bd: 2.5px solid var(--fg);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #17120e; --card: #231c15; --fg: #fff3d9; --muted: #b9ab93; --line: #3a3024; --soft: #2d241b; --sh: #000;
+  --accent: #ff6a45; --c2: #ffc21a; --c3: #3fcf8e; --c4: #5aa9ff; --c5: #ff86b4;
+  --t1: color-mix(in srgb, var(--c2) 30%, var(--card)); --t2: color-mix(in srgb, var(--c3) 26%, var(--card)); --t3: color-mix(in srgb, var(--c4) 28%, var(--card)); --t4: color-mix(in srgb, var(--accent) 30%, var(--card)); --t5: color-mix(in srgb, var(--c5) 28%, var(--card)); } }
+:root[data-theme="dark"] {
+  --bg: #17120e; --card: #231c15; --fg: #fff3d9; --muted: #b9ab93; --line: #3a3024; --soft: #2d241b; --sh: #000;
+  --accent: #ff6a45; --c2: #ffc21a; --c3: #3fcf8e; --c4: #5aa9ff; --c5: #ff86b4;
+  --t1: color-mix(in srgb, var(--c2) 30%, var(--card)); --t2: color-mix(in srgb, var(--c3) 26%, var(--card)); --t3: color-mix(in srgb, var(--c4) 28%, var(--card)); --t4: color-mix(in srgb, var(--accent) 30%, var(--card)); --t5: color-mix(in srgb, var(--c5) 28%, var(--card)); }
+body { font-family: var(--font-body); font-size: 16.5px; padding-bottom: 40px; }
+h1, h2, h3, .brand, .i-mark, .stats b, .figs b, .choice b { font-family: var(--font-display); }
+h1, h2 { font-weight: 800; letter-spacing: -.035em; }
+h3 { font-weight: 700; }
+.mono, .day, .sec-h, th { font-family: var(--font-body); font-weight: 700; letter-spacing: .04em; }
+/* header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); border-bottom: var(--bd); padding-block: 12px; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.35rem; font-weight: 800; letter-spacing: -.04em; }
+.brand::before { content: ""; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); border: var(--bd); box-shadow: 3px 3px 0 var(--c2); }
+.nav { gap: 6px; }
+.nav a { padding: 7px 14px; border: 2px solid transparent; border-radius: 999px; color: var(--fg); font-weight: 700; font-size: .95rem; }
+.nav a:hover { background: var(--soft); }
+.nav a[aria-current="page"] { background: var(--c2); border-color: var(--fg); color: #1c1612; }
+.nav a.cta { background: var(--accent); color: #1c1612; border: 2px solid var(--fg); box-shadow: 3px 3px 0 var(--sh); }
+.nav a.me-chip { padding: 3px 12px 3px 3px; border-color: var(--fg); background: var(--card); }
+.nav a.me-chip[aria-current="page"] .av { background: var(--fg); color: var(--bg); }
+.av { border: 2px solid var(--fg); background: var(--c5); color: #1c1612; }
+/* buttons, chips, inputs */
+.btn { border-radius: 999px; border: var(--bd); background: var(--accent); color: #1c1612; font-weight: 800; padding: 8px 22px; min-height: 48px; box-shadow: 4px 4px 0 var(--sh); transition: transform .12s, box-shadow .12s; }
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--sh); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--sh); }
+.btn.ghost { background: var(--card); color: var(--fg); }
+.btn.sm { min-height: 38px; padding: 4px 16px; font-size: .9rem; box-shadow: 3px 3px 0 var(--sh); }
+.btn.danger { background: var(--card); color: var(--warn); border-color: var(--warn); box-shadow: 3px 3px 0 var(--warn); }
+.btn[disabled] { box-shadow: none; }
+.chip { border: 2px solid var(--fg); border-radius: 999px; background: var(--card); font-weight: 600; min-height: 40px; padding: 4px 16px; }
+.chip:hover { background: var(--soft); }
+.chip[aria-pressed="true"] { background: var(--c2); color: #1c1612; border-color: var(--fg); box-shadow: 2px 2px 0 var(--sh); }
+.form input:not([type="checkbox"]), .form select, .form textarea, .q, .vol input[type="number"] { border: 2px solid var(--fg); border-radius: 14px; background: var(--card); min-height: 48px; padding: 8px 14px; }
+.form input:focus, .form select:focus, .form textarea:focus, .q:focus { outline: 3px solid var(--c4); outline-offset: 1px; }
+.q { border-radius: 999px; }
+.check input { accent-color: var(--accent); }
+.tag { border: 2px solid var(--fg); border-radius: 999px; padding: 1px 10px; color: var(--fg); font-weight: 600; font-size: .76rem; background: var(--card); }
+.tag.get { background: var(--c2); color: #1c1612; }
+.st { font-family: var(--font-body); font-weight: 800; }
+/* cards */
+.gocard, .cat, .tpl, .org, .block, .story, .week-card, .card, .cert-wrap, .next, .panel, .picked, .results, .banner, .row, .id-row + .btns { }
+.gocard, .cat, .tpl, .org, .block, .story, .week-card, .card, .cert-wrap, .next, .panel, .row { border: var(--bd); border-radius: var(--r); background: var(--card); box-shadow: 5px 5px 0 var(--sh); }
+.banner { border: 2px dashed var(--fg); border-radius: 16px; background: var(--card); color: var(--fg); }
+.banner.dark { background: var(--fg); color: var(--bg); border: 2px solid var(--fg); }
+.picked, .results { border: 2px solid var(--fg); border-radius: 14px; }
+.empty { border: 2px dashed var(--fg); border-radius: var(--r); padding: 28px; margin-top: 16px; text-align: center; background: var(--card); }
+.cardlist { border: 0; gap: 18px; padding: 4px 6px 6px 0; }
+.org { padding: 18px; }
+.block { padding: 18px; margin-top: 16px; }
+.story { margin-top: 18px; padding: 18px; border-bottom: var(--bd); }
+.week-card { box-shadow: 5px 5px 0 var(--sh); background: var(--t2); color: var(--fg); }
+.week-card p { color: var(--fg); opacity: .8; }
+.story .wk, .week-card .wk { color: var(--fg); background: var(--c2); display: inline-block; padding: 2px 10px; border-radius: 999px; border: 2px solid var(--fg); font-family: var(--font-body); font-weight: 800; }
+.card { margin-top: 22px; }
+.page-h { padding-block: 28px 6px; } .page-h h1 { font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 800; }
+.sec-h { margin-top: 36px; padding: 0 0 10px; border: 0; font-size: 1rem; text-transform: none; letter-spacing: -.01em; font-family: var(--font-display); font-weight: 800; align-items: center; }
+.sec-h span:first-child { font-size: 1.5rem; letter-spacing: -.03em; }
+.sec-h span:last-child, .sec-h a { background: var(--fg); color: var(--bg); border-radius: 999px; padding: 2px 12px; font-size: .8rem; font-family: var(--font-body); text-decoration: none; font-weight: 700; }
+.day { display: inline-block; margin-top: 28px; padding: 4px 14px; background: var(--fg); color: var(--bg); border: 0; border-radius: 999px; font-size: .78rem; }
+/* shift rows as cards */
+.row { grid-template-columns: 60px minmax(0, 1fr) auto; padding: 16px; margin-top: 14px; border-bottom: var(--bd); align-items: start; }
+.row .ico { width: 56px; height: 56px; border-radius: 18px; border: 2px solid var(--fg); background: var(--cc, var(--t1)); align-items: center; justify-content: center; color: #1c1612; }
+.row .ico svg { width: 34px; height: 34px; }
+.row h3 { font-size: 1.25rem; letter-spacing: -.02em; }
+.row .when { font-weight: 800; color: var(--fg); font-size: .8rem; }
+.row.c-Environment { --cc: var(--t2); } .row.c-Food { --cc: var(--t1); } .row.c-Elders { --cc: var(--t5); } .row.c-Children { --cc: var(--t3); } .row.c-Health { --cc: var(--t4); } .row.c-Safety { --cc: var(--t3); }
+.spots { background: var(--soft); border: 2px solid var(--fg); border-radius: 999px; padding: 1px 10px; font-weight: 800; color: var(--fg); }
+.spots.low { background: var(--accent); color: #1c1612; }
+/* hero, dashboard */
+.hero { background: var(--c2); border: var(--bd); border-radius: 30px; padding: 28px; margin-top: 22px; box-shadow: 6px 6px 0 var(--sh); color: #1c1612; position: relative; overflow: hidden; }
+.hero h1 { font-size: clamp(2.5rem, 8vw, 4.6rem); line-height: .95; max-width: 9ch; }
+.hero p { color: #1c1612; opacity: .85; }
+.figs b, .stats b { font-family: var(--font-display); font-weight: 800; }
+.hero .figs > div { background: var(--card); border: 2px solid #1c1612; border-radius: 16px; padding: 6px 14px; color: #1c1612; }
+.hero .figs span { color: #1c1612; font-size: .78rem; font-weight: 700; }
+.hero .art { filter: none; }
+.hero .ill { --paper: var(--c2); }
+.stats { border: 0; gap: 12px; margin-top: 22px; }
+.stats div { border: var(--bd); border-radius: 18px; padding: 14px 16px; background: var(--t1); box-shadow: 4px 4px 0 var(--sh); }
+.stats div:nth-child(2) { background: var(--t2); } .stats div:nth-child(3) { background: var(--t5); }
+.stats b { font-size: 2.6rem; letter-spacing: -.04em; } .stats span { color: var(--fg); font-weight: 700; }
+.dash-h h1, .wel h1, .entry h1 { font-weight: 800; font-size: clamp(2.3rem, 7vw, 4rem); line-height: .98; }
+.dash-h .stats { gap: 10px; } .dash-h .stats > div { border: var(--bd) !important; padding: 8px 14px !important; } .dash-h .stats b { color: var(--fg); font-size: 1.8rem; }
+.gocard { padding: 20px; gap: 12px; } .gocard h2 { font-size: 1.8rem; }
+.gocard:nth-child(1) { background: var(--c2); color: #1c1612; } .gocard:nth-child(2) { background: var(--c3); color: #1c1612; }
+.gocard p { color: #1c1612; opacity: .85; }
+.gocard:nth-child(1) .ill { --paper: var(--c2); } .gocard:nth-child(2) .ill { --paper: var(--c3); }
+.cat, .tpl { padding: 10px 10px 12px; }
+.cat:nth-child(6n+1), .tpl:nth-child(6n+1) { background: var(--t1); } .cat:nth-child(6n+2), .tpl:nth-child(6n+2) { background: var(--t2); } .cat:nth-child(6n+3), .tpl:nth-child(6n+3) { background: var(--t3); }
+.cat:nth-child(6n+4), .tpl:nth-child(6n+4) { background: var(--t4); } .cat:nth-child(6n+5), .tpl:nth-child(6n+5) { background: var(--t5); } .cat:nth-child(6n), .tpl:nth-child(6n) { background: var(--t1); }
+.cat:hover, .tpl:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--sh); border-color: var(--fg); }
+.cat, .tpl { transition: transform .12s, box-shadow .12s; }
+.cat span, .tpl span { color: var(--fg); opacity: .75; font-weight: 600; }
+.cat-grid, .tpl-grid { gap: 16px; padding-right: 6px; padding-bottom: 6px; }
+.next { background: var(--t3); border-color: var(--fg); }
+.card { box-shadow: 5px 5px 0 var(--sh); }
+.steps li::before { border: 2px solid var(--fg); background: var(--card); font-weight: 800; }
+.steps li.done::before { background: var(--c3); color: #1c1612; }
+/* register, wizard */
+.entry { padding-block: 36px 16px; }
+.choose { gap: 16px; max-width: 480px; }
+.choice { border: var(--bd); border-radius: 24px; background: var(--card); box-shadow: 5px 5px 0 var(--sh); padding: 18px 20px; transition: transform .12s, box-shadow .12s; }
+.choose .choice:nth-child(1) { background: var(--c2); color: #1c1612; } .choose .choice:nth-child(2) { background: var(--c3); color: #1c1612; }
+.choice:hover { background: var(--c5); color: #1c1612; transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--sh); }
+.choice b { font-size: 1.4rem; letter-spacing: -.03em; } .choice span { color: #1c1612; opacity: .8; font-weight: 600; }
+.choice i { width: 40px; height: 40px; border-radius: 50%; background: #1c1612; color: var(--c2); display: grid; place-items: center; font-size: 1.1rem; }
+.pdot { height: 10px; border-radius: 999px; background: var(--card); border: 2px solid var(--fg); max-width: 48px; }
+.pdot.on { background: var(--accent); }
+.wz h2 { font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 800; }
+.form label, .form legend { font-weight: 700; font-size: .92rem; }
+.sum { border: var(--bd); border-radius: 18px; padding: 6px 16px; background: var(--card); }
+.sum div { border-bottom: 2px dotted var(--line); } .sum div:last-child { border: 0; }
+.results button { background: var(--card); } .results button:hover { background: var(--c2); color: #1c1612; }
+.loc .verdict.ok { color: var(--ok); font-weight: 700; }
+/* profile */
+.id-row .av { border-width: 3px; box-shadow: 4px 4px 0 var(--sh); }
+.id-row h1 { font-size: clamp(2.1rem, 6vw, 3.2rem); font-weight: 800; }
+.badge { border: 0; padding: 14px 10px 14px 0; } .badges { gap: 8px; }
+.av-pick button { border: 2px solid var(--fg); background: var(--card); } .av-pick button[aria-pressed="true"] { background: var(--c2); color: #1c1612; box-shadow: 2px 2px 0 var(--sh); }
+.cert-paper { border-radius: 10px; border: 2px solid #1c1612; overflow: hidden; }
+table { border: var(--bd); border-radius: 16px; border-collapse: separate; border-spacing: 0; overflow: hidden; background: var(--card); }
+th { background: var(--fg); color: var(--bg); padding: 10px 12px; } td { padding: 12px; border-bottom: 2px dotted var(--line); }
+.vol { border-top: 2px dotted var(--line); }
+.foot { border-top: var(--bd); margin-top: 60px; font-weight: 600; }
+.toast { border-radius: 999px; border: 2px solid var(--bg); font-weight: 700; box-shadow: 3px 3px 0 var(--accent); }
+/* intro */
+#intro { --intro-fg: #1c1612; }
+.i-mark { font-size: 1.35rem; font-weight: 800; letter-spacing: -.04em; display: inline-flex; gap: 10px; align-items: center; }
+.i-mark::before { content: ""; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: 2.5px solid #1c1612; box-shadow: 3px 3px 0 #fff3d9; }
+.sc h1 { font-family: var(--font-display); font-weight: 800; letter-spacing: -.045em; }
+.sc.big h1 { font-size: clamp(3.4rem, 12vw, 7rem); line-height: .86; }
+.sc .kick { font-family: var(--font-body); background: #1c1612; color: #fff3d9; display: inline-block; padding: 4px 12px; border-radius: 999px; opacity: 1; font-weight: 700; }
+.sc .lead, .sc li { font-weight: 500; }
+.sc li::before { height: 3px; width: 12px; border-radius: 2px; top: .7em; background: #1c1612; }
+.i-btn, .i-go button { border: 2.5px solid #1c1612; border-radius: 999px; background: #fffaf0; color: #1c1612; font-weight: 800; box-shadow: 4px 4px 0 #1c1612; min-height: 50px; padding: 8px 24px; }
+.i-btn { background: #1c1612; color: #fffaf0; box-shadow: 4px 4px 0 var(--accent); } .i-btn.ghost { background: #fffaf0; color: #1c1612; box-shadow: 4px 4px 0 #1c1612; }
+.i-go button.pri { background: #1c1612; color: #fffaf0; box-shadow: 4px 4px 0 var(--accent); }
+.i-go button[disabled] { opacity: .35; box-shadow: none; }
+.i-skip { font-weight: 700; opacity: .8; }
+.dots { gap: 6px; } .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #1c1612; background: transparent; opacity: 1; } .dot.on { background: #1c1612; width: 34px; border-radius: 999px; }
+#intro .mosaic .pic, .mosaic figure { }
+.mosaic .pic { border: 2.5px solid #1c1612; border-radius: 18px; background: #fffaf0; padding: 6px; box-shadow: 4px 4px 0 #1c1612; }
+.mosaic .pic .ill { --paper: #fffaf0; }
+.mosaic figcaption { font-weight: 700; }
+/* bottom tab bar (phones) */
+.tabbar { display: none; }
+@media (max-width: 720px) {
+  body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  .nav a:not(.me-chip):not(.cta) { display: none; }
+  .nav a.cta { display: none; }
+  .tabbar { display: flex; position: fixed; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 40; background: var(--card); border: var(--bd); border-radius: 26px; padding: 6px; gap: 4px; box-shadow: 4px 4px 0 var(--sh); justify-content: space-between; }
+  .tabbar a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 20px; text-decoration: none; color: var(--fg); font-size: .68rem; font-weight: 800; border: 2px solid transparent; min-width: 0; }
+  .tabbar a svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tabbar a[aria-current="page"] { background: var(--c2); color: #1c1612; border-color: var(--fg); }
+  .toast { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
+  .foot { margin-bottom: 8px; }
+  .hero { padding: 20px; } .go-grid { gap: 18px; }
+  .row { grid-template-columns: 52px minmax(0, 1fr); } .row .ico { width: 48px; height: 48px; }
+  .sc.big h1 { font-size: clamp(3.2rem, 17vw, 5rem); }
+}
+@media (max-width: 720px) { .sc, .hero, .opts, .entry, .wel, .go-grid, .story, .week-card, .form { grid-template-columns: minmax(0, 1fr); } #intro { overflow-x: hidden; } .sc h1 { overflow-wrap: anywhere; } .sc.big h1 { font-size: clamp(2.8rem, 15vw, 4.6rem); } }
+.banner { font-size: .8rem; padding: 8px 12px; margin-top: 12px; }
+@media (max-width: 720px) { .banner:not(.dark) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
+.hero .ill, .gocard .ill, .mosaic .pic .ill { --ink: #1c1612; }
+.hero .figs > div { background: #fffdf6 !important; } .hero .figs b, .hero .figs span { color: #1c1612 !important; }
+.gocard h2, .gocard p, .gocard .btn.ghost { color: #1c1612; }
+</style>
+
+<div id="intro" role="dialog" aria-label="Welcome to Open Shifts">
+  <div class="i-top"><span class="i-mark">Open Shifts</span><button class="i-skip" id="i-skip" type="button">Skip intro</button></div>
+  <div class="i-stage" id="i-stage"></div>
+  <div class="i-nav"><div class="dots" id="i-dots"></div><div class="i-go"><button type="button" id="i-back">Back</button><button type="button" id="i-next" class="pri">Next</button></div></div>
+</div>
+<script>
+(function () {
+  var skip = false;
+  try { skip = sessionStorage.getItem("os-intro") === "1"; } catch (e) {}
+  if (skip) { var i = document.getElementById("intro"); if (i) i.remove(); }
+})();
+</script>
+
+<div class="shell" id="app">
+  <header class="top" id="hdr"></header>
+  <div id="banner"></div>
+  <main id="main"><p class="empty">Loading...</p></main>
+  <footer class="foot">
+    <span id="foot-note"></span>
+    <button class="link" id="replay" type="button">Replay intro</button>
+  </footer>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Quick tabs"></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var DAY = 86400000, HOUR = 3600000;
+  var CAUSES = ["Environment", "Food", "Elders", "Children", "Health", "Safety"];
+  var SKILLS = ["Cooking", "Teaching", "Driving", "Repairs", "Electrical", "Plumbing", "Painting", "Gardening", "Photography", "Social media", "Tech help", "Accounts", "Counselling", "Writing", "Event help", "Lifting"];
+  var MED = ["Doctor", "Nurse", "Paramedic", "First-aid certified", "CPR trained", "Pharmacist", "Physiotherapist", "Counsellor or psychologist", "Regular blood donor"];
+  var COMFORT = ["Heavy lifting", "Outdoors in heat", "Night shifts", "Working with children", "Working with elderly people", "Hospital or clinic settings"];
+  var DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  var SLOTS = ["Early morning (5 to 8)", "Morning (8 to 12)", "Afternoon (12 to 4)", "Evening (4 to 8)", "Night (after 8)"];
+  var PERKS = ["Meal or snacks", "Travel refund", "T-shirt or kit", "Certificate signed by us", "Recommendation letter", "Stipend", "Training", "Accommodation"];
+  var GTYPES = ["Registered NGO or trust", "Temporary community or one-time drive", "Resident welfare association", "School or college club", "Company CSR team", "Religious or community group", "Individual organiser"];
+
+  /* ---------- helpers ---------- */
+  function h(tag, a) {
+    var n = document.createElement(tag); a = a || {};
+    for (var k in a) {
+      var v = a[k]; if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k === "html") n.innerHTML = v;
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    for (var i = 2; i < arguments.length; i++) add(n, arguments[i]);
+    return n;
+  }
+  function add(n, c) {
+    if (c == null || c === false) return;
+    if (Array.isArray(c)) c.forEach(function (x) { add(n, x); });
+    else n.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  }
+  function clone(o) { return o == null ? o : JSON.parse(JSON.stringify(o)); }
+  function toast(m) { var t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 3000); }
+  function fmtDay(ts) {
+    var t0 = new Date(); t0.setHours(0, 0, 0, 0); var d0 = new Date(ts); d0.setHours(0, 0, 0, 0);
+    var diff = Math.round((d0 - t0) / DAY), s = new Date(ts).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+    return diff === 0 ? "Today, " + s : diff === 1 ? "Tomorrow, " + s : s;
+  }
+  function fmtShort(ts) { return new Date(ts).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); }
+  function fmtTime(ts) { return new Date(ts).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }).toLowerCase(); }
+  function uid8() { return Math.random().toString(36).slice(2, 8); }
+  function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function cut(s, n) { s = String(s || ""); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+  function list(a) { return (a && a.length) ? a.join(", ") : ""; }
+
+  /* ---------- line drawings (faceless figures, strokes only) ---------- */
+  var BODY = '<circle cx="0" cy="0" r="6"/><path d="M-8 11h16l-2 27h-12z"/><path d="M-3 38l-2 26M3 38l2 26"/>';
+  var ARMS = {
+    down: '<path d="M-8 13l-5 22M8 13l5 22"/>',
+    up: '<path d="M-8 13l-12-12M8 13l12-12"/>',
+    carry: '<path d="M-8 14l9 12M8 14l-1 12"/><rect x="-6" y="22" width="20" height="14"/>',
+    reach: '<path d="M-8 13l-5 22M8 13l20 6"/>',
+    reachDown: '<path d="M8 14l14 18M-8 14l-5 22"/>',
+    book: '<path d="M-8 14l8 14M8 14l-8 14"/><path d="M-9 26l9 3 9-3v9l-9 3-9-3z"/>'
+  };
+  function P(x, y, arms, extra, flip) { return '<g transform="translate(' + x + ' ' + y + ')' + (flip ? ' scale(-1 1)' : '') + '">' + BODY + (arms || ARMS.down) + (extra || "") + '</g>'; }
+  function svgWrap(inner, vb) { return '<svg viewBox="' + (vb || "0 0 320 220") + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>'; }
+  var SKY = '<path d="M8 196h304"/>' +
+    '<path d="M30 196v-62l40-30 40 30v62"/><rect x="58" y="160" width="24" height="36"/><rect x="40" y="138" width="12" height="12"/>' +
+    '<path d="M128 196V98h72v98"/><path d="M120 98l44-32 44 32"/><rect x="140" y="112" width="14" height="14"/><rect x="174" y="112" width="14" height="14"/><rect x="140" y="142" width="14" height="14"/><rect x="174" y="142" width="14" height="14"/><rect x="157" y="166" width="14" height="30"/>' +
+    '<path d="M236 196V120"/><path d="M236 120c0-12 10-16 22-16"/><path d="M252 104h14l-3 10h-8z"/><path d="M259 118v6"/>' +
+    '<path d="M286 196v-30"/><path d="M286 178c-12 0-18-8-18-16 12 0 18 8 18 16z"/><path d="M286 170c0-10 7-16 18-16 0 10-7 16-18 16z"/>';
+  var ICON = {
+    Environment: '<path d="M32 56V30"/><path d="M32 40c-10 0-16-6-16-14 10 0 16 6 16 14z"/><path d="M32 34c0-8 6-14 16-14 0 8-6 14-16 14z"/><path d="M22 56h20"/>',
+    Food: '<path d="M10 28h44l-5 24H15z"/><path d="M20 28l8-14M44 28l-8-14"/><path d="M24 36v10M32 36v10M40 36v10"/>',
+    Elders: '<path d="M14 26h30v12a12 12 0 0 1-12 12h-6a12 12 0 0 1-12-12z"/><path d="M44 30h4a6 6 0 0 1 0 12h-5"/><path d="M12 56h36"/><path d="M24 10c-3 3 3 5 0 9M34 10c-3 3 3 5 0 9"/>',
+    Children: '<path d="M12 14h10v38H12zM24 18h10v34H24z"/><path d="M38 52l10-34 9 3-10 34z"/><path d="M8 56h50"/>',
+    Health: '<path d="M32 8c10 14 16 22 16 32a16 16 0 0 1-32 0c0-10 6-18 16-32z"/><path d="M32 34v12M26 40h12"/>',
+    Safety: '<path d="M20 56h16M28 56V20"/><path d="M28 20c0-8 6-10 14-10"/><path d="M38 10h10l-2 8h-6z"/><path d="M42 22v6M46 22l3 5M38 22l-3 5"/>',
+    Star: '<path d="M32 8l7 15 16 2-12 11 3 16-14-8-14 8 3-16L9 25l16-2z"/>',
+    Clock: '<circle cx="32" cy="32" r="22"/><path d="M32 18v14l10 6"/>',
+    People: '<circle cx="22" cy="22" r="7"/><circle cx="44" cy="24" r="6"/><path d="M8 52c0-12 6-18 14-18s14 6 14 18M38 52c0-8 3-13 8-13s10 5 10 13"/>',
+    Other: '<path d="M12 52V28l20-14 20 14v24z"/><path d="M26 52V38h12v14"/>'
+  };
+  function icoSvg(c, size) { return '<svg viewBox="0 0 64 64" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICON[c] || ICON.Other) + "</svg>"; }
+  function icon(c, size) { return h("span", { class: "ico", html: icoSvg(c, size) }); }
+  function G(x, y, s, inner) { return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')">' + inner + '</g>'; }
+
+  /* ---------- story intro ---------- */
+  /* ---------- illustration kit: faceless figures, one ink colour, one accent ---------- */
+  var ILL = (function () {
+    function pt(p) { return p[0].toFixed(1) + " " + p[1].toFixed(1); }
+    function limb(pts, w, skin) {
+      var d = "M" + pts.map(pt).join("L");
+      return skin ? '<path class="sk" d="' + d + '" stroke-width="' + w + '"/><path class="sk2" d="' + d + '" stroke-width="' + (w - 4) + '"/>' : '<path class="in" d="' + d + '" stroke-width="' + w + '"/>';
+    }
+    var POSES = {
+      stand:  { g: 60, h: [1, -66], s: [0, -50], aL: [[-14, -34], [-16, -14]], aR: [[14, -34], [16, -14]], lL: [[-4, 30], [-6, 57]], lR: [[4, 30], [6, 57]] },
+      walk:   { g: 60, h: [3, -66], s: [2, -50], aL: [[-8, -36], [-2, -18]], aR: [[14, -34], [24, -18]], lL: [[-10, 28], [-20, 56]], lR: [[8, 30], [16, 56]] },
+      hold:   { g: 60, h: [2, -66], s: [0, -50], aL: [[0, -28], [20, -36]], aR: [[12, -26], [26, -32]], lL: [[-4, 30], [-6, 57]], lR: [[4, 30], [6, 57]] },
+      reach:  { g: 60, h: [2, -66], s: [0, -50], aL: [[-14, -34], [-16, -14]], aR: [[22, -42], [44, -40]], lL: [[-4, 30], [-6, 57]], lR: [[4, 30], [6, 57]] },
+      wave:   { g: 60, h: [1, -66], s: [0, -50], aL: [[-14, -34], [-16, -14]], aR: [[20, -56], [24, -80]], lL: [[-4, 30], [-6, 57]], lR: [[4, 30], [6, 57]] },
+      cheer:  { g: 60, h: [0, -66], s: [0, -50], aL: [[-18, -58], [-22, -82]], aR: [[18, -58], [22, -82]], lL: [[-5, 30], [-8, 57]], lR: [[5, 30], [8, 57]] },
+      arm:    { g: 60, h: [1, -66], s: [0, -50], aL: [[-14, -34], [-16, -14]], aR: [[20, -38], [30, -22]], lL: [[-4, 30], [-6, 57]], lR: [[4, 30], [6, 57]] },
+      sit:    { g: 34, h: [2, -66], s: [0, -50], aL: [[-8, -30], [10, -16]], aR: [[10, -30], [28, -16]], lL: [[22, 0], [26, 31]], lR: [[28, 2], [36, 31]] },
+      ground: { g: 10, h: [3, -66], s: [2, -50], aL: [[-12, -30], [8, -14]], aR: [[14, -30], [30, -16]], lL: [[24, 4], [4, 7]], lR: [[-24, 4], [-4, 7]] },
+      crouch: { g: 28, h: [20, -52], s: [10, -40], aL: [[22, -24], [34, -8]], aR: [[26, -26], [40, -10]], lL: [[22, -4], [18, 25]], lR: [[28, -6], [28, 25]] },
+      bend:   { g: 60, h: [36, -38], s: [24, -36], aL: [[34, -18], [42, 2]], aR: [[40, -22], [52, -4]], lL: [[-4, 30], [-8, 57]], lR: [[8, 30], [14, 57]] },
+      lean:   { g: 60, h: [14, -64], s: [8, -49], aL: [[16, -36], [28, -20]], aR: [[24, -38], [36, -24]], lL: [[-6, 30], [-12, 57]], lR: [[6, 30], [12, 57]] }
+    };
+    function hair(kind) {
+      var top = '<path class="fi" d="M-10 -1A10 10 0 0 1 10 -1Q3 -9 -10 -1Z"/>';
+      if (kind === "short") return top;
+      if (kind === "bun") return top + '<circle class="fi" cx="-8" cy="-9" r="5.5"/>';
+      if (kind === "long") return top + '<path class="fi" d="M-10 -1Q-14 14 -8 22L1 15Q-5 8 -5 0Z"/>';
+      if (kind === "cap") return '<path class="fi" d="M-10 -1A10 10 0 0 1 10 -2Z"/><path class="in" d="M7 -3L18 0" stroke-width="3.4"/>';
+      if (kind === "grey") return '<path class="in" d="M-10 -1A10 10 0 0 1 9 -4" stroke-width="2"/><path class="in" d="M-9 2Q-12 6 -9 9" stroke-width="2"/>';
+      return "";
+    }
+    function person(x, g, pose, o) {
+      o = o || {}; var P = typeof pose === "string" ? POSES[pose] : pose, sc = o.s || 1, fl = o.flip ? -1 : 1;
+      var wide = o.w || 14, hipw = o.hw || 11, out = "";
+      var sh = P.s, hp = [0, 0];
+      function leg(l, back) { var f = l[1]; return limb([hp, l[0]], 13, false) + limb([l[0], [f[0], f[1] - 3]], 10, false) + '<path class="in" d="M' + (f[0] - 1) + " " + (f[1] - 2) + "L" + (f[0] + 9) + " " + (f[1] - 2) + '" stroke-width="5"/>'; }
+      if (o.dress === "sari") {
+        var gy = P.g - 4;
+        out += '<path class="fi" d="M-12 -4L12 -4Q18 ' + (gy / 2) + " 17 " + gy + "L-17 " + gy + "Q-14 " + (gy / 2) + ' -12 -4Z"/>';
+        out += '<path class="sa" d="M-9 8L-12 ' + (gy - 4) + 'M-2 8L-3 ' + (gy - 4) + 'M6 8L7 ' + (gy - 4) + '"/><path class="acs" d="M-17 ' + (gy - 5) + "L17 " + (gy - 5) + '" stroke-width="3"/>';
+        out += '<ellipse class="pa" cx="-7" cy="' + (P.g - 1) + '" rx="6" ry="2.6"/><ellipse class="pa" cx="9" cy="' + (P.g - 1) + '" rx="6" ry="2.6"/>';
+      } else if (o.dress === "skirt") {
+        out += leg(P.lR) + leg(P.lL) + '<path class="fi" d="M-12 -4L12 -4L16 28L-16 28Z"/>';
+      } else { out += leg(P.lR) + leg(P.lL); }
+      var nx = sh[0], ny = sh[1], dx = hp[0] - nx, dy = hp[1] - ny, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, px = -uy, py = ux;
+      var a = [nx + px * wide, ny + py * wide], b = [nx - px * wide, ny - py * wide], c = [hp[0] - px * hipw, hp[1] - py * hipw], d = [hp[0] + px * hipw, hp[1] + py * hipw];
+      out += '<path class="fi" d="M' + pt(a) + "Q" + pt([(a[0] + d[0]) / 2 + px * 3, (a[1] + d[1]) / 2 + py * 3]) + " " + pt(d) + "L" + pt(c) + "Q" + pt([(b[0] + c[0]) / 2 - px * 3, (b[1] + c[1]) / 2 - py * 3]) + " " + pt(b) + "Q" + pt([nx - ux * 8, ny - uy * 8]) + " " + pt(a) + 'Z"/>';
+      if (o.sash) out += '<path class="acs" d="M' + pt([nx - wide + 3, ny + 3]) + "L" + pt([hp[0] + hipw - 2, hp[1] - 2]) + '" stroke-width="4"/>';
+      if (o.vest) out += '<path class="acs" d="M' + pt([nx, ny + 4]) + "L" + pt([hp[0], hp[1] - 4]) + '" stroke-width="5"/>';
+      out += limb([sh, P.h], 7, true);
+      function arm(A, sx) { var s0 = [nx + sx, ny + 4]; return limb([s0, A[0]], 9, false) + limb([A[0], A[1]], 8, true) + '<circle class="pa" cx="' + A[1][0] + '" cy="' + A[1][1] + '" r="4.4"/>'; }
+      out += arm(P.aL, -wide + 2) + arm(P.aR, wide - 2);
+      out += '<g transform="translate(' + P.h[0] + " " + P.h[1] + ')"><circle class="pa" r="10"/>' + hair(o.hair || "short") + "</g>";
+      return '<g class="' + (o.cls || "") + '"><g transform="translate(' + x + " " + g + ") scale(" + (fl * sc) + " " + sc + ") translate(0 " + (-P.g) + ')">' + out + "</g></g>";
+    }
+    var DEFS = '<defs><radialGradient id="gl"><stop offset="0" stop-color="var(--accent)" stop-opacity=".55"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></radialGradient></defs>';
+    function svg(inner, vb) { return '<svg class="ill" viewBox="' + (vb || "0 0 480 300") + '" fill="none" role="img" aria-hidden="true">' + DEFS + inner + "</svg>"; }
+    function T(x, y, s) { return '<g transform="translate(' + x + " " + y + ")" + (s ? " scale(" + s + ")" : "") + '">'; }
+    var GR = '<path class="ln" d="M14 270H466"/>';
+    function tree(x, y, s) { return T(x, y, s) + '<path class="fi" d="M-4 0L-3 -46L3 -46L4 0Z"/><path class="pa" d="M-34 -42Q-44 -70 -20 -78Q-18 -102 6 -98Q34 -104 38 -78Q56 -66 40 -46Q20 -34 -10 -40Q-26 -36 -34 -42Z"/><path class="ln" d="M-14 -62Q-6 -70 2 -62M10 -74Q18 -80 24 -72"/></g>'; }
+    function box(x, y, w, h) { return '<g><rect class="ac" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="1.5"/><path class="ln" d="M' + (x + w / 2) + " " + y + "V" + (y + h) + '"/></g>'; }
+    function house(x, y, w, h, win) {
+      var s = '<path class="pa" d="M' + x + " " + y + "V" + (y - h) + "L" + (x + w / 2) + " " + (y - h - w * 0.3) + "L" + (x + w) + " " + (y - h) + "V" + y + 'Z"/>';
+      for (var i = 0; i < (win || 2); i++) s += '<rect class="pa" x="' + (x + 10 + i * (w - 28) / Math.max(1, (win || 2) - 1 || 1)) + '" y="' + (y - h + 10) + '" width="10" height="12"/>';
+      return s + '<rect class="pa" x="' + (x + w / 2 - 6) + '" y="' + (y - 24) + '" width="12" height="24"/>';
+    }
+    function lamp(x, y, h, glow) { return '<g><path class="in" d="M' + x + " " + y + "V" + (y - h) + "Q" + x + " " + (y - h - 12) + " " + (x + 18) + " " + (y - h - 12) + '" stroke-width="4"/><path class="fi" d="M' + (x + 10) + " " + (y - h - 12) + "H" + (x + 28) + "L" + (x + 25) + " " + (y - h - 3) + "H" + (x + 13) + 'Z"/>' + (glow ? '<circle class="glow" cx="' + (x + 19) + '" cy="' + (y - h + 8) + '" r="52" fill="url(#gl)"/>' : "") + "</g>"; }
+    function steam(x, y) { return '<g class="steam"><path class="acs" d="M' + x + " " + y + "q-4 -6 0 -11t0 -11" + '" stroke-width="2" style="animation-delay:0s"/><path class="acs" d="M' + (x + 8) + " " + y + "q-4 -6 0 -11t0 -11" + '" stroke-width="2" style="animation-delay:.9s"/></g>'; }
+    var S = {};
+    S.community = function () {
+      return GR + '<circle class="ac sunr" cx="240" cy="236" r="92"/>' + house(20, 270, 80, 46, 2) + house(386, 270, 80, 56, 2) +
+        person(118, 270, "stand", { hair: "grey", dress: "sari", cls: "bob" }) + '<path class="in" d="M142 232L146 268" stroke-width="3"/>' +
+        person(182, 270, "cheer", { hair: "cap", vest: 1, cls: "bob b2" }) + person(248, 270, "wave", { hair: "long", cls: "bob b3", dress: "skirt" }) +
+        person(312, 270, "cheer", { hair: "short", s: 0.66, cls: "bob" }) + person(372, 270, "stand", { hair: "bun", dress: "sari", sash: 1, cls: "bob b2" });
+    };
+    S.clean = function () {
+      return GR + tree(70, 270, 1) + '<rect class="pa" x="396" y="214" width="26" height="56" rx="3"/><path class="ln" d="M392 214H426M404 214V208H414V214"/>' +
+        person(190, 270, "bend", { hair: "cap", vest: 1 }) + '<path class="in" d="M244 262L292 214" stroke-width="3"/><path class="in" d="M292 214L300 206M292 214L286 204" stroke-width="3"/>' +
+        '<g class="litter"><path class="ac" d="M262 262l8-2 2 8-8 2z"/><path class="ac" d="M226 266l7-1 1 6-7 1z"/><path class="pa" d="M160 266l9 0 0 5-9 0z"/></g>' +
+        person(330, 270, "hold", { hair: "bun", dress: "sari", flip: 1, sash: 1 }) + '<path class="ac" d="M290 226Q278 240 282 262Q300 270 318 262Q324 240 312 226Z"/><path class="ln" d="M290 226Q300 232 312 226"/>';
+    };
+    S.food = function () {
+      return GR + '<path class="ln" d="M40 124L440 124"/>' + '<path class="pa" d="M60 124L84 96H396L420 124Z"/>' +
+        '<rect class="pa" x="150" y="206" width="190" height="10"/><path class="in" d="M162 216V270M328 216V270" stroke-width="5"/>' +
+        box(172, 178, 44, 28) + box(222, 190, 40, 16) + box(268, 170, 48, 36) + box(190, 150, 36, 28) +
+        person(120, 270, "hold", { hair: "cap", vest: 1 }) + box(138, 218, 26, 20) +
+        person(380, 270, "reach", { hair: "bun", dress: "sari", flip: 1, sash: 1 }) + '<g class="pass">' + box(344, 218, 24, 18) + "</g>" +
+        person(430, 270, "stand", { hair: "short", s: 0.62, flip: 1 });
+    };
+    S.read = function () {
+      var f = ""; for (var i = 0; i < 8; i++) f += '<path class="' + (i % 2 ? "ac" : "pa") + '" d="M' + (60 + i * 52) + " " + (52 + (i % 2) * 2) + "l22 0 -11 22z" + '"/>';
+      return GR + '<path class="ln" d="M44 50Q240 90 436 50"/>' + f + tree(420, 270, 0.9) +
+        '<path class="pa" d="M70 270L96 250H410L436 270Z"/><path class="acs" d="M110 258H396" stroke-width="2"/>' +
+        person(160, 252, "ground", { hair: "bun", dress: "skirt" }) + '<path class="pa" d="M182 218L204 224L226 218L226 238L204 244L182 238Z"/><path class="ln" d="M204 224V244"/>' +
+        person(262, 254, "ground", { hair: "short", s: 0.72, flip: 1, cls: "bob" }) + person(318, 254, "ground", { hair: "long", s: 0.72, flip: 1, cls: "bob b2" }) + person(364, 252, "ground", { hair: "cap", s: 0.7, flip: 1, cls: "bob b3" });
+    };
+    S.elders = function () {
+      return GR + '<rect class="pa" x="46" y="70" width="86" height="100" rx="2"/><path class="ln" d="M89 70V170M46 120H132"/><path class="fi" d="M72 170H106L102 150H76Z"/><path class="ac" d="M80 150Q74 132 84 126Q86 138 92 140Q98 130 104 134Q100 146 96 150Z"/>' +
+        '<path class="in" d="M186 270V232H232V270M180 230H238" stroke-width="5"/><path class="in" d="M180 230V176" stroke-width="5"/>' +
+        person(204, 232, "sit", { hair: "grey", w: 13, cls: "bob" }) + '<path class="in" d="M244 214L252 268" stroke-width="3.4"/>' +
+        '<rect class="pa" x="292" y="226" width="60" height="8"/><path class="in" d="M300 234V270M344 234V270" stroke-width="5"/>' +
+        '<path class="pa" d="M308 226L310 210H328L330 226Z"/><path class="pa" d="M326 226L328 210H346L348 226Z"/>' + steam(319, 206) + steam(337, 206) +
+        '<path class="in" d="M380 270V240H408V270M376 238H412" stroke-width="5"/>' + person(394, 240, "sit", { hair: "bun", flip: 1, dress: "skirt", cls: "bob b2" });
+    };
+    S.health = function () {
+      return GR + '<path class="in" d="M60 270V70" stroke-width="4"/><path class="pa" d="M62 74H132V120H62Z"/><path class="ac" d="M88 84H106V92H114V100H106V108H88V100H80V92H88Z" style="fill:var(--paper)"/>' +
+        '<rect class="pa" x="206" y="214" width="130" height="10"/><path class="in" d="M218 224V270M324 224V270" stroke-width="5"/>' +
+        '<rect class="ac" x="236" y="190" width="46" height="24" rx="3"/><path class="in" d="M259 196V208M253 202H265" stroke-width="3" style="stroke:var(--paper)"/><path class="in" d="M244 190V186H274V190" stroke-width="3"/>' +
+        person(176, 270, "arm", { hair: "bun", dress: "sari", sash: 1 }) +
+        '<path class="in" d="M392 270V236H416V270M388 234H420" stroke-width="5"/>' + person(406, 236, "sit", { hair: "grey", flip: 1, cls: "bob" }) +
+        '<path class="ac" d="M350 218Q340 214 336 224Q342 232 352 228Z"/>' + person(448, 270, "stand", { hair: "short", s: 0.62, flip: 1 });
+    };
+    S.plant = function () {
+      return GR + '<circle class="ac sunr" cx="396" cy="84" r="34"/><path class="ln" d="M396 36V24M396 144V132M348 84H336M456 84H444"/>' +
+        person(150, 270, "bend", { hair: "cap", vest: 1 }) + '<path class="in" d="M180 236L214 270" stroke-width="4"/><path class="fi" d="M208 262L226 276L214 280Z" style="transform:translate(-4px,-8px)"/>' +
+        '<path class="fi" d="M232 270Q248 262 264 270Z"/><g class="grow"><path class="in" d="M248 268V220" stroke-width="3"/><path class="pa" d="M248 232Q226 232 220 214Q244 212 248 232Z"/><path class="pa" d="M248 224Q250 202 272 198Q274 218 248 224Z"/></g>' +
+        person(350, 270, "reach", { hair: "bun", dress: "sari", flip: 1, sash: 1 }) +
+        '<path class="ac" d="M286 214H316L312 244H290Z"/><path class="in" d="M286 222L270 214" stroke-width="3"/><path class="ln" d="M316 224L332 214"/>' +
+        '<g class="drip"><path class="acs" d="M268 222l-3 8M262 218l-3 8M274 226l-3 8" stroke-width="2"/></g>';
+    };
+    S.safety = function () {
+      var st = ""; [[70, 40], [150, 70], [250, 36], [330, 62], [420, 44]].forEach(function (p, i) { st += '<path class="in twinkle" d="M' + p[0] + " " + (p[1] - 5) + "V" + (p[1] + 5) + "M" + (p[0] - 5) + " " + p[1] + "H" + (p[0] + 5) + '" stroke-width="2" style="animation-delay:' + i * 0.5 + 's"/>'; });
+      return GR + st + '<path class="pa" d="M392 90A26 26 0 1 0 420 130A20 20 0 1 1 392 90Z"/>' + house(30, 270, 80, 70, 2) + house(380, 270, 76, 60, 2) +
+        lamp(260, 270, 150, true) + person(180, 270, "walk", { hair: "cap", vest: 1, cls: "bob" }) + '<path class="ac" d="M206 232L236 224L238 236Z" style="opacity:.8"/>' +
+        person(332, 270, "arm", { hair: "bun", dress: "sari", flip: 1, sash: 1, cls: "bob b2" }) + '<rect class="pa" x="296" y="230" width="18" height="24" rx="1"/><path class="ln" d="M300 238H310M300 244H310"/>';
+    };
+    S.animals = function () {
+      return GR + house(24, 270, 84, 60, 2) + tree(430, 270, 0.8) +
+        person(150, 270, "crouch", { hair: "short" }) + '<path class="pa" d="M184 232L194 236L188 246L178 242Z"/><g class="drip"><path class="acs" d="M192 248L196 262M196 246L200 262" stroke-width="2"/></g>' +
+        '<path class="ac" d="M196 262H252L246 270H202Z"/>' +
+        '<g class="dog"><path class="fi" d="M262 222Q300 212 330 226L332 246H262Z"/><path class="in" d="M270 246V270M286 246V270M316 246V270M328 246V270" stroke-width="7"/><path class="fi" d="M262 226L246 236L242 252L262 254Z"/><path class="fi" d="M238 244L226 256Q226 262 240 262L254 256Z"/><path class="fi" d="M252 226L260 214L268 226Z"/><g class="wag"><path class="in" d="M330 226Q350 214 354 196" stroke-width="6"/></g></g>' +
+        '<path class="pa" d="M356 262H398L394 270H360Z"/>';
+    };
+    S.board = function () {
+      return GR + '<path class="pa" d="M110 56H370V196H110Z"/><path class="in" d="M130 196V270M350 196V270" stroke-width="6"/>' +
+        '<rect class="pa" x="128" y="72" width="64" height="48"/><rect class="ac" x="204" y="72" width="64" height="48"/><rect class="pa" x="280" y="72" width="64" height="48"/><rect class="pa" x="128" y="132" width="64" height="48"/><rect class="pa" x="204" y="132" width="64" height="48"/><rect class="ac" x="280" y="132" width="64" height="48"/>' +
+        '<path class="ln" d="M138 86H180M138 96H170M214 86H256M214 96H246M290 86H332M290 96H322M138 146H180M138 156H170M214 146H256M214 156H246M290 146H332M290 156H322"/>' +
+        person(60, 270, "walk", { hair: "bun", dress: "sari", sash: 1, cls: "bob" }) + person(420, 270, "reach", { hair: "cap", vest: 1, flip: 1, cls: "bob b2" });
+    };
+    S.gap = function () {
+      return GR + '<path class="pa" d="M200 270Q240 296 280 270" style="opacity:0"/>' +
+        person(90, 270, "wave", { hair: "long", dress: "skirt", cls: "bob" }) + '<circle class="pa" cx="150" cy="150" r="22"/><path class="ln" d="M150 150V136M150 150L160 156"/>' +
+        person(390, 270, "hold", { hair: "grey", flip: 1, cls: "bob b2", w: 13 }) + box(404, 208, 34, 26) + box(410, 184, 28, 24) + box(364, 220, 30, 22) +
+        '<path class="acs bridge" d="M120 188Q240 96 360 188" stroke-width="3" pathLength="1"/>';
+    };
+    S.town = function () {
+      var w = '<rect class="ac winlit" x="60" y="190" width="10" height="12"/><rect class="ac winlit" x="170" y="176" width="10" height="12" style="animation-delay:1s"/><rect class="ac winlit" x="330" y="196" width="10" height="12" style="animation-delay:2s"/><rect class="ac winlit" x="420" y="180" width="10" height="12" style="animation-delay:3s"/>';
+      return GR + house(40, 270, 90, 70, 2) + house(150, 270, 80, 84, 2) + house(310, 270, 90, 66, 2) + house(412, 270, 54, 76, 1) + w + lamp(250, 270, 110, true) +
+        person(210, 270, "walk", { hair: "cap", vest: 1, s: 0.8, cls: "bob" }) + person(280, 270, "walk", { hair: "bun", dress: "sari", s: 0.8, flip: 1, sash: 1, cls: "bob b2" }) + person(120, 270, "stand", { hair: "short", s: 0.6 });
+    };
+    S.cert = function () {
+      return '<rect class="pa" x="70" y="40" width="250" height="190"/><rect class="ln" x="82" y="52" width="226" height="166"/><path class="in" d="M110 92H280M130 118H260M120 144H270" stroke-width="3"/><path class="in" d="M146 78H244" stroke-width="5"/>' +
+        '<circle class="ac" cx="195" cy="184" r="20"/><path class="ln" d="M184 202L178 232L195 224L212 232L206 202"/><path class="in" d="M186 184L192 190L205 177" stroke-width="3" style="stroke:var(--paper)"/>' +
+        '<g transform="translate(350 70)"><circle class="pa" r="32"/><path class="fi" d="M0 -16L5 -5L17 -4L8 4L11 16L0 10L-11 16L-8 4L-17 -4L-5 -5Z"/></g>' +
+        '<g transform="translate(350 150)"><circle class="pa" r="32"/><path class="in" d="M0 -18V0L12 8" stroke-width="3.5"/></g>' +
+        '<g transform="translate(350 230)"><circle class="pa" r="32"/><path class="in" d="M0 18V-2" stroke-width="3"/><path class="ac" d="M0 -2Q-18 -2 -20 -20Q0 -22 0 -2Z"/><path class="ac" d="M0 -8Q2 -26 20 -28Q20 -10 0 -8Z"/></g>';
+    };
+    return { S: S, svg: svg, person: person };
+  })();
+  
+  var ART = { sweep: "clean", vacc: "health", feed: "animals", vet: "plant", bag: "food", elder: "elders", kids: "read" };
+  function ill(k) { var n = ART[k] || k; return ILL.S[n] ? ILL.svg(ILL.S[n]()) : ""; }
+  function pic(k, cls, d, still) {
+    var go = !still && !(typeof S !== "undefined" && S && S.seen && S.seen[S.view]);
+    return '<span class="pic' + (go ? " go " : " ") + (cls || "") + '" style="--d:' + d + 's">' + ill(k) + '</span>';
+  }
+  var CERT_ART = '<rect x="14" y="30" width="190" height="136"/><rect x="24" y="40" width="170" height="116"/><path d="M50 70h118M70 90h78M60 112h98"/><circle cx="109" cy="134" r="10"/><path d="M100 143l-5 14 14-5 14 5-5-14"/>' + G(222, 40, .6, '<circle cx="32" cy="32" r="28"/>' + ICON.Star) + G(222, 100, .6, '<circle cx="32" cy="32" r="28"/>' + ICON.Environment) + G(222, 160, .6, '<circle cx="32" cy="32" r="28"/>' + ICON.Clock);
+  var SC = [
+    { big: 1, k: "", t: "Welcome.", lead: "Show up for someone near you.", art: pic("community", "", 0.2) },
+    { k: "Who we are", t: "A volunteer board for your town.", lead: "Open Shifts is where neighbours, local groups and one-time drives put up real tasks, and where people who want to help can find them.", art: pic("board", "up", 0.2) },
+    { k: "What we are solving", t: "Help is nearby. It just never meets.", li: ["People want to volunteer and do not know where to start.", "Groups need hands and cannot find them at short notice.", "Good work goes unrecorded and unthanked."], art: pic("gap", "rt", 0.2) },
+    { k: "Our goal", t: "Every town should know who shows up.", li: ["Make helping as easy as booking a seat.", "Give every volunteer a record they can be proud of.", "Give small groups the same tools big ones have."], art: pic("town", "rad", 0.2) },
+    { k: "What you will actually do", t: "Real tasks, close to home.", lead: "From a Saturday litter pick to a vaccination camp on Tuesday. You choose. The organiser confirms.", mosaic: [["clean", "Clean lanes and parks"], ["health", "Help at health camps"], ["read", "Read with children"], ["food", "Carry food to people who need it"]] },
+    { k: "What you get", t: "Every hour you give is counted.", li: ["A certificate for every shift the organiser signs off.", "Digital badges as your hours grow.", "A record you can show for school, college or work.", "Whatever the organisation adds: a meal, a T-shirt, a letter."], art: pic("cert", "up", 0.2) },
+    { cta: 1, k: "", t: "Want to be part of the community?", lead: "It takes two minutes to register.", art: pic("plant", "dn", 0.2) }
+  ];
+  var scn = 0;
+  function closeIntro(then) {
+    var intro = $("#intro"); if (!intro) { if (then) then(); return; }
+    try { sessionStorage.setItem("os-intro", "1"); } catch (e) {}
+    intro.classList.add("leave");
+    setTimeout(function () { if (intro.parentNode) intro.remove(); }, 520);
+    if (then) then();
+  }
+  function showScene(i) {
+    var intro = $("#intro"); if (!intro) return;
+    scn = Math.max(0, Math.min(SC.length - 1, i)); intro.style.setProperty("--intro-bg", ["#ffc21a", "#ff9fc2", "#7be3b0", "#8cc8ff", "#ffb59a", "#ffe08a", "#ffc21a"][scn]); var s = SC[scn], st = $("#i-stage"); st.textContent = "";
+    var art;
+    if (s.svg) {
+      art = h("div", { class: "art drawn", "aria-hidden": "true", html: svgWrap(s.art) });
+      Array.prototype.forEach.call(art.querySelectorAll("path,rect,circle"), function (e, n) { e.setAttribute("pathLength", "1"); e.style.setProperty("--d", (0.2 + n * 0.07).toFixed(2) + "s"); });
+    } else if (s.mosaic) {
+      art = h("div", { class: "art mosaic", "aria-hidden": "true" }, s.mosaic.map(function (m, n) {
+        return h("figure", {}, h("span", { class: "pic go " + ["", "up", "rt", "dn"][n], style: "--d:" + (0.2 + n * 0.35).toFixed(2) + "s", html: ill(m[0]) }), h("figcaption", { text: m[1], style: "--d:" + (1.2 + n * 0.35).toFixed(2) + "s" }));
+      }));
+    } else art = h("div", { class: "art", "aria-hidden": "true", html: s.art });
+    var txt = h("div", {}, s.k ? h("div", { class: "kick", text: s.k }) : null, h("h1", { text: s.t }),
+      s.lead ? h("p", { class: "lead", text: s.lead, style: "--d:.55s" }) : null,
+      s.li ? h("ul", {}, s.li.map(function (x, n) { return h("li", { text: x, style: "--d:" + (0.5 + n * 0.45).toFixed(2) + "s" }); })) : null,
+      s.cta ? h("div", {}, h("button", { class: "i-btn", type: "button", style: "--d:1s", text: "Register here", onclick: function () { closeIntro(function () { location.hash = "register"; }); } }),
+        h("button", { class: "i-btn ghost", type: "button", style: "--d:1.2s", text: "Look around first", onclick: function () { closeIntro(function () { location.hash = "shifts"; }); } })) : null);
+    st.appendChild(h("section", { class: "sc" + (s.big ? " big" : "") }, txt, art));
+    var dots = $("#i-dots"); dots.textContent = "";
+    SC.forEach(function (_, n) { dots.appendChild(h("button", { class: "dot" + (n === scn ? " on" : ""), type: "button", "aria-label": "Scene " + (n + 1) + " of " + SC.length, onclick: function () { showScene(n); } })); });
+    $("#i-back").disabled = scn === 0;
+    var nx = $("#i-next"); nx.textContent = scn === SC.length - 1 ? "Register" : "Next";
+  }
+  function startIntro() {
+    if (!$("#intro")) return;
+    $("#i-skip").addEventListener("click", function () { closeIntro(function () { if (!location.hash) location.hash = "shifts"; }); });
+    $("#i-back").addEventListener("click", function () { showScene(scn - 1); });
+    $("#i-next").addEventListener("click", function () { if (scn === SC.length - 1) closeIntro(function () { location.hash = "register"; }); else showScene(scn + 1); });
+    document.addEventListener("keydown", function (e) {
+      if (!$("#intro")) return;
+      if (e.key === "ArrowRight") $("#i-next").click(); else if (e.key === "ArrowLeft") showScene(scn - 1); else if (e.key === "Escape") $("#i-skip").click();
+    });
+    showScene(0); $("#i-next").focus();
+  }
+
+  /* ---------- state and backends ---------- */
+  var S = { uid: null, mode: "preview", canWrite: true, ready: false, view: "shifts", members: {}, shifts: {}, signups: {}, attendance: {}, stories: {}, seen: {}, isAdmin: false, delStory: null, me: null, priv: null,
+    f: { cause: "All", q: "" }, draft: {}, openId: null, cancelId: null, confirmDel: false, editing: false, slow: false, viewerName: "", dl: null, cert: null, justJoined: false };
+  var B = null, D = { shifts: [], byId: {}, req: {} };
+
+  function seedPreview(st) {
+    var now = new Date();
+    function at(off, hh, mm) { var d = new Date(now); d.setHours(hh, mm || 0, 0, 0); d.setDate(d.getDate() + off); return d.getTime(); }
+    st.members["ex-1"] = { kind: "group", name: "Meera Iyer", area: "Lakeview Colony", town: "Duliajan", district: "Dibrugarh", state: "Assam", pin: "786602", joined: now.getTime() - 400 * DAY, ex: 1,
+      org: { name: "Green Lake Trust", type: "Registered NGO or trust", about: "Neighbours who look after the lake and the park around it since 2016.", causes: ["Environment", "Safety"], perks: ["Meal or snacks", "Certificate signed by us"], badge: "Lake Guardian" } };
+    st.members["ex-2"] = { kind: "group", name: "Joseph D'Souza", area: "Gandhi Nagar", town: "Duliajan", district: "Dibrugarh", state: "Assam", pin: "786602", joined: now.getTime() - 300 * DAY, ex: 1,
+      org: { name: "Hall Food Bank", type: "Temporary community or one-time drive", about: "A weekly grocery box for 40 families, packed by volunteers in the community hall.", causes: ["Food", "Children", "Elders"], perks: ["Meal or snacks", "Recommendation letter"], badge: "" } };
+    st.shifts["ex-1"] = { items: {
+      x1: { title: "Lake edge litter pick", cause: "Environment", desc: "Gloves and bags provided. We sort plastic from the rest and weigh it.", place: "Gate 2, Lakeview Park", area: "Lakeview Colony", start: at(2, 7), hours: 2, spots: 12, reward: "Breakfast and a Lake Guardian badge", ex: 1 },
+      x2: { title: "Plant 30 saplings along the fence", cause: "Environment", desc: "Digging and watering. Wear shoes you do not mind getting muddy.", place: "North fence, Lakeview Park", area: "Lakeview Colony", start: at(9, 8), hours: 3, spots: 10, reward: "Breakfast", ex: 1 },
+      x3: { title: "Street light survey after dark", cause: "Safety", desc: "Walk assigned lanes and note every light that is out. We send the list to the ward office.", place: "Main gate", area: "Lakeview Colony", start: at(5, 19), hours: 2, spots: 10, reward: "", ex: 1 },
+      p1: { title: "Lake edge litter pick", cause: "Environment", desc: "", place: "Gate 2, Lakeview Park", area: "Lakeview Colony", start: at(-12, 7), hours: 4, spots: 12, reward: "Breakfast", ex: 1 } } };
+    st.shifts["ex-2"] = { items: {
+      x4: { title: "Pack weekly grocery boxes", cause: "Food", desc: "Sort rice, dal and oil into 40 boxes for families on the community list.", place: "Community hall, ground floor", area: "Gandhi Nagar", start: at(3, 16), hours: 3, spots: 8, reward: "Dinner packet", ex: 1 },
+      x5: { title: "Reading hour for classes 2 to 4", cause: "Children", desc: "Read aloud and help children pick a book.", place: "Library room, Block C", area: "Gandhi Nagar", start: at(7, 10), hours: 2, spots: 5, reward: "Recommendation letter on request", ex: 1 },
+      x6: { title: "Tea and chat visits", cause: "Elders", desc: "Visit two elderly neighbours in pairs. No skills needed, only patience.", place: "Hall steps", area: "Gandhi Nagar", start: at(4, 17), hours: 2, spots: 6, reward: "", ex: 1 },
+      p2: { title: "Reading hour for classes 2 to 4", cause: "Children", desc: "", place: "Library room, Block C", area: "Gandhi Nagar", start: at(-5, 10), hours: 4, spots: 5, reward: "Recommendation letter on request", ex: 1 },
+      p3: { title: "Pack weekly grocery boxes", cause: "Food", desc: "", place: "Community hall", area: "Gandhi Nagar", start: at(-3, 16), hours: 3, spots: 8, reward: "Dinner packet", ex: 1 } } };
+    var t1 = now.getTime() - 14 * DAY, t2 = now.getTime() - 7 * DAY, t3 = now.getTime() - 4 * DAY;
+    var me = st.signups["me-local"] || { items: {} }; me.items = me.items || {};
+    me.items.p1 = { at: t1, name: "You (example)", contact: "", orgId: "ex-1", ex: 1 };
+    me.items.p2 = { at: t2, name: "You (example)", contact: "", orgId: "ex-2", ex: 1 };
+    me.items.p3 = { at: t3, name: "You (example)", contact: "", orgId: "ex-2", ex: 1 };
+    st.signups["me-local"] = me;
+    st.stories["ex-story"] = { title: "Door to door on vaccination day", who: "ASHA workers, Ward 4 (example story)", pic: "vacc", at: now.getTime() - 2 * DAY, ex: 1,
+      text: "This is an example of how a weekly story looks. Before the camp opened, three health workers walked every lane in the ward, house by house, to remind families and carry the vaccination cards of people who could not walk to the centre.\n\nBy afternoon the queue at the centre was calm and short. Nobody had to be turned away." };
+    st.attendance["ex-1"] = { decisions: { "p1__me-local": { s: "confirmed", at: t1 } }, marks: { "p1__me-local": 4 } };
+    st.attendance["ex-2"] = { decisions: { "p2__me-local": { s: "confirmed", at: t2 }, "p3__me-local": { s: "confirmed", at: t3 } }, marks: { "p2__me-local": 4, "p3__me-local": 3 } };
+  }
+  function previewBackend() {
+    var KEY = "open-shifts-preview-v4", st = {}, subs = {};
+    try { st = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+    ["members", "shifts", "signups", "attendance", "priv", "stories"].forEach(function (k) { st[k] = st[k] || {}; });
+    ["members", "shifts", "attendance", "stories"].forEach(function (n) { Object.keys(st[n]).forEach(function (k) { if (k.indexOf("ex-") === 0) delete st[n][k]; }); });
+    if (st.signups["me-local"] && st.signups["me-local"].items) ["p1", "p2", "p3"].forEach(function (k) { delete st.signups["me-local"].items[k]; });
+    seedPreview(st);
+    function persist() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+    function emit(n) { (subs[n] || []).forEach(function (f) { f(clone(st[n])); }); }
+    return {
+      mode: "preview", uid: "me-local", canWrite: true, viewerName: "", isAdmin: true,
+      sub: function (n, f) { (subs[n] = subs[n] || []).push(f); f(clone(st[n])); },
+      set: function (n, id, d) { st[n][id] = clone(d); persist(); emit(n); return Promise.resolve(); },
+      del: function (n, id) { delete st[n][id]; persist(); emit(n); return Promise.resolve(); },
+      getPriv: function () { return Promise.resolve(clone(st.priv.me) || null); },
+      setPriv: function (d) { st.priv.me = clone(d); persist(); return Promise.resolve(); }
+    };
+  }
+  async function liveBackend() {
+    if (!window.claude || !window.claude.use) return null;
+    var db = await window.claude.use("db"), user = await window.claude.use("user");
+    if (!db || !user) return null;
+    var uid = await user.id(); if (!uid) return null;
+    var me = await user.me(), cw = await user.can("data.write"), adm = await user.canEdit(), q = {};
+    function wr(path, fn) { var p = (q[path] || Promise.resolve()).catch(function () {}).then(fn); q[path] = p; return p; }
+    var priv = db.doc("data/users/" + uid + "/profile");
+    return {
+      mode: "live", uid: uid, canWrite: cw !== false, isAdmin: !!adm, viewerName: me.name || "",
+      sub: function (n, f) {
+        db.collection(n).onSnapshot(function (s) { var m = {}; s.docs.forEach(function (d) { m[d.id] = d.data(); }); f(m); }, function () { S.slow = true; sched(); });
+      },
+      set: function (n, id, d) { return wr(n + "/" + id, function () { return db.doc(n + "/" + id).set(d); }); },
+      del: function (n, id) { return wr(n + "/" + id, function () { return db.doc(n + "/" + id).delete(); }); },
+      getPriv: function () { return priv.get().then(function (s) { return s.exists ? clone(s.data()) : null; }); },
+      setPriv: function (d) { return wr("priv", function () { return priv.set(d); }); }
+    };
+  }
+
+  /* ---------- derived data ---------- */
+  function decOf(oid, sid, uid, at) { var d = (((S.attendance[oid] || {}).decisions) || {})[sid + "__" + uid]; return d && d.at === at ? d.s : null; }
+  function markOf(oid, sid, uid) { var v = (((S.attendance[oid] || {}).marks) || {})[sid + "__" + uid]; return typeof v === "number" ? v : null; }
+  function endOf(s) { return s.start + s.hours * HOUR; }
+  function derive() {
+    var shifts = [], byId = {}, req = {};
+    Object.keys(S.shifts).forEach(function (oid) {
+      var it = (S.shifts[oid] || {}).items || {};
+      Object.keys(it).forEach(function (id) { var s = Object.assign({ id: id, orgId: oid }, it[id]); shifts.push(s); byId[id] = s; });
+    });
+    Object.keys(S.signups).forEach(function (u) {
+      var it = (S.signups[u] || {}).items || {};
+      Object.keys(it).forEach(function (sid) {
+        var s = byId[sid]; if (!s) return;
+        var d = decOf(s.orgId, sid, u, it[sid].at), state = d === "confirmed" ? "confirmed" : d === "declined" ? "declined" : "pending";
+        (req[sid] = req[sid] || []).push({ uid: u, item: it[sid], state: state, mark: state === "confirmed" ? markOf(s.orgId, sid, u) : null });
+      });
+    });
+    return { shifts: shifts, byId: byId, req: req };
+  }
+  function ofState(sid, st) { return (D.req[sid] || []).filter(function (r) { return r.state === st; }); }
+  function left(s) { return s.spots - ofState(s.id, "confirmed").length; }
+  function orgName(oid) { var m = S.members[oid]; return m ? ((m.org && m.org.name) || m.name) : "An organiser"; }
+  function rowsFor(uid) {
+    var out = [];
+    Object.keys(D.req).forEach(function (sid) { D.req[sid].forEach(function (r) { if (r.uid === uid) out.push({ s: D.byId[sid], item: r.item, state: r.state, mark: r.mark }); }); });
+    return out.sort(function (a, b) { return b.s.start - a.s.start; });
+  }
+  function statusOf(r) {
+    var now = Date.now();
+    if (r.s.cancelled) return { t: "Shift cancelled", c: "bad" };
+    if (r.state === "declined") return { t: "Declined", c: "bad" };
+    if (r.state === "pending") return endOf(r.s) < now ? { t: "No reply", c: "" } : { t: "Waiting for organiser", c: "" };
+    if (r.mark != null && r.mark > 0) return { t: "Verified, " + plural(r.mark, "hr"), c: "ok" };
+    if (r.mark === 0) return { t: "Marked absent", c: "bad" };
+    if (endOf(r.s) < now) return { t: "Awaiting sign-off", c: "" };
+    if (r.s.start > now) return { t: "Confirmed", c: "ok" };
+    return { t: "In progress", c: "ok" };
+  }
+  function totals(rows) {
+    var t = { hrs: 0, n: 0, orgs: {}, cause: {} };
+    rows.forEach(function (r) { if (r.mark > 0) { t.hrs += r.mark; t.n++; t.orgs[r.s.orgId] = (t.orgs[r.s.orgId] || 0) + 1; t.cause[r.s.cause] = (t.cause[r.s.cause] || 0) + r.mark; } });
+    t.orgCount = Object.keys(t.orgs).length; return t;
+  }
+  var CAUSEBADGE = { Environment: "Green Hand", Food: "Full Plate", Elders: "Good Company", Children: "Story Hour", Health: "Steady Care", Safety: "Night Watch" };
+  function badgesFor(t) {
+    var b = [
+      { n: "First Step", d: "1 shift signed off", i: "Star", on: t.n >= 1 }, { n: "Steady Hands", d: "5 shifts signed off", i: "People", on: t.n >= 5 },
+      { n: "10 Hours", d: "10 verified hours", i: "Clock", on: t.hrs >= 10 }, { n: "25 Hours", d: "25 verified hours", i: "Clock", on: t.hrs >= 25 },
+      { n: "50 Hours", d: "50 verified hours", i: "Clock", on: t.hrs >= 50 }, { n: "100 Hours", d: "100 verified hours", i: "Clock", on: t.hrs >= 100 },
+      { n: "Team Player", d: "Helped 3 organisations", i: "People", on: t.orgCount >= 3 }];
+    CAUSES.forEach(function (c) { b.push({ n: CAUSEBADGE[c], d: "4 hours in " + c.toLowerCase(), i: c, on: (t.cause[c] || 0) >= 4 }); });
+    Object.keys(t.orgs).forEach(function (oid) { var m = S.members[oid]; if (m && m.org && m.org.badge) b.push({ n: m.org.badge, d: "From " + m.org.name, i: "Other", on: true, org: 1 }); });
+    return b;
+  }
+  function badgeSvg(b) {
+    return '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="ring" cx="32" cy="32" r="30"/><g transform="translate(14 14) scale(.56)">' + (ICON[b.i] || ICON.Other) + '</g></svg>';
+  }
+
+  /* ---------- certificate ---------- */
+  function hashCode(str) { var x = 5381; for (var i = 0; i < str.length; i++) x = ((x << 5) + x + str.charCodeAt(i)) >>> 0; return x.toString(36).toUpperCase().padStart(6, "0"); }
+  function certSvg(r) {
+    var name = cut(S.me.name, 40), org = orgName(r.s.orgId), id = "OS-" + hashCode(r.s.id + S.uid + r.mark);
+    var reward = r.s.reward ? "Thank-you from " + org + ": " + cut(r.s.reward, 80) : "";
+    var T = function (x, y, size, w, txt, ex) { return '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-family="Geist, Helvetica, Arial, sans-serif" font-size="' + size + '" font-weight="' + w + '" fill="#0a0a0a"' + (ex || "") + '>' + esc(txt) + '</text>'; };
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 594" width="840" height="594"><rect width="840" height="594" fill="#ffffff"/>' +
+      '<rect x="24" y="24" width="792" height="546" fill="none" stroke="#0a0a0a" stroke-width="2"/><rect x="36" y="36" width="768" height="522" fill="none" stroke="#0a0a0a" stroke-width="1"/>' +
+      T(420, 104, 14, 500, "OPEN SHIFTS", ' letter-spacing="4"') + T(420, 164, 40, 600, "Certificate of Volunteering", ' letter-spacing="-1"') +
+      T(420, 222, 16, 400, "This certifies that") + T(420, 286, name.length > 26 ? 38 : 50, 600, name, ' letter-spacing="-1"') +
+      '<path d="M270 304h300" stroke="#0a0a0a" stroke-width="1"/>' +
+      T(420, 346, 17, 400, "gave " + (r.mark === 1 ? "1 hour" : r.mark + " hours") + " as a volunteer on " + fmtShort(r.s.start)) +
+      T(420, 384, 24, 600, cut(r.s.title, 60)) + T(420, 414, 16, 400, "with " + cut(org, 50) + ", " + cut(r.s.place, 40)) +
+      (reward ? T(420, 450, 14, 400, reward) : "") +
+      T(420, 490, 13, 400, "Hours signed off by " + cut(org, 50) + " · Record " + id) +
+      '<g transform="translate(398 504) scale(.65)" fill="none" stroke="#0a0a0a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="30"/>' + ICON.Star + '</g></svg>';
+  }
+  function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "shift"; }
+
+  /* ---------- writes ---------- */
+  function mutate(n, fn) {
+    var d = clone(S[n][S.uid]) || {}; fn(d);
+    return B.set(n, S.uid, d).catch(function () { S.canWrite = false; toast("Could not save. This page may be view-only for your account."); render(); });
+  }
+
+  /* ---------- form helpers ---------- */
+  function dr(key) { return (S.draft[key] = S.draft[key] || {}); }
+  function fld(key, id, label, o) {
+    o = o || {}; var d = dr(key);
+    var el = h(o.tag || (o.options ? "select" : "input"), { id: key + "-" + id, type: o.type, placeholder: o.ph, maxlength: o.max, min: o.min, max: o.maxv, autocomplete: o.ac, rows: o.rows, inputmode: o.im });
+    if (o.options) o.options.forEach(function (x) { el.appendChild(h("option", { value: x, text: x })); });
+    var v = d[id] != null ? d[id] : (o.def != null ? o.def : "");
+    el.value = v; if (d[id] == null && o.def != null) d[id] = o.def;
+    el.addEventListener("input", function () { d[id] = el.value; });
+    return h("label", { class: o.full ? "full" : "", for: key + "-" + id }, label, o.hint ? h("small", { text: o.hint }) : null, el);
+  }
+  function chipGroup(key, id, label, options, single, hint) {
+    var d = dr(key); if (!single) d[id] = d[id] || [];
+    var box = h("div", { class: "chips" });
+    function paint() {
+      box.textContent = "";
+      options.forEach(function (o) {
+        var on = single ? d[id] === o : d[id].indexOf(o) > -1;
+        box.appendChild(h("button", { type: "button", class: "chip", "aria-pressed": String(on), text: o, onclick: function () {
+          if (single) d[id] = o; else { var i = d[id].indexOf(o); if (i > -1) d[id].splice(i, 1); else d[id].push(o); }
+          paint(); } }));
+      });
+    }
+    paint();
+    return h("fieldset", { class: "full" }, h("legend", {}, label, hint ? h("small", { text: "  " + hint, style: "font-weight:400;color:var(--muted)" }) : null), box);
+  }
+  function wizard(key, steps, finish, onCancel) {
+    var d = dr(key); d._step = d._step || 0;
+    var wrap = h("div", { class: "wz" });
+    function paint() {
+      wrap.textContent = ""; var st = steps[d._step], err = h("div", { class: "err", role: "alert" });
+      wrap.appendChild(h("div", { class: "prog" }, steps.map(function (_, i) { return h("span", { class: "pdot" + (i <= d._step ? " on" : "") }); }), h("span", { class: "mono", text: (d._step + 1) + " of " + steps.length })));
+      wrap.appendChild(h("h2", { text: st.title })); if (st.hint) wrap.appendChild(h("p", { class: "hint", text: st.hint }));
+      var form = h("form", { class: "form", novalidate: true }, st.build(), h("div", { class: "full" }, err),
+        h("div", { class: "full btns" },
+          d._step > 0 ? h("button", { class: "btn ghost", type: "button", text: "Back", onclick: function () { d._step--; paint(); window.scrollTo(0, 0); } }) : (onCancel ? h("button", { class: "btn ghost", type: "button", text: "Cancel", onclick: onCancel }) : null),
+          h("button", { class: "btn", type: "submit", text: d._step === steps.length - 1 ? st.cta || "Finish" : "Next" })));
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var m = st.validate ? st.validate(d) : null; if (m) { err.textContent = m; return; }
+        if (d._step === steps.length - 1) finish(d, err); else { d._step++; paint(); window.scrollTo(0, 0); }
+      });
+      wrap.appendChild(form);
+    }
+    paint(); return wrap;
+  }
+  function sumRows(rows) { return h("div", { class: "sum full" }, rows.filter(function (r) { return r[1]; }).map(function (r) { return h("div", {}, h("span", { text: r[0] }), h("span", { text: String(r[1]) })); })); }
+  function consentBox(key, id, text) {
+    var d = dr(key), cb = h("input", { type: "checkbox", id: key + "-" + id }); cb.checked = !!d[id];
+    cb.addEventListener("change", function () { d[id] = cb.checked; });
+    return h("label", { class: "check full", for: key + "-" + id }, cb, text);
+  }
+
+  /* ---------- views: shifts ---------- */
+  function fig(n, l) { return h("div", {}, h("b", { text: String(n) }), h("span", { text: l })); }
+
+  /* ---------- avatar, welcome, dashboard ---------- */
+  var AV = ['<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>', '<path d="M5 19c0-9 5-14 14-14 0 9-5 14-14 14z"/><path d="M5 19l8-8"/>', '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>', '<path d="M2 19l7-10 4 6 3-4 6 8z"/>', '<path d="M12 3l2.6 5.6 6 .7-4.4 4.1 1.2 6L12 16.5 6.6 19.4l1.2-6L3.4 9.3l6-.7z"/>', '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/>', '<path d="M2 9c3-3 5-3 8 0s5 3 8 0M2 15c3-3 5-3 8 0s5 3 8 0"/>', '<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/>'];
+  function avatar(m, size) {
+    var n = m && typeof m.av === "number" && AV[m.av] ? m.av : -1, nm = ((m && (m.org && m.kind === "group" ? m.org.name : m.name)) || "?").trim();
+    var ini = nm.split(/\s+/).slice(0, 2).map(function (x) { return x[0]; }).join("").toUpperCase();
+    return h("span", { class: "av", style: "width:" + size + "px;height:" + size + "px;font-size:" + Math.round(size * .38) + "px", "aria-hidden": "true", html: n > -1 ? '<svg viewBox="0 0 24 24">' + AV[n] + "</svg>" : ini });
+  }
+  function avPicker() {
+    var cur = S.me && typeof S.me.av === "number" ? S.me.av : -1;
+    return h("div", { class: "av-pick", role: "group", "aria-label": "Choose your mark" }, AV.map(function (g, i) {
+      return h("button", { type: "button", "aria-pressed": String(cur === i), "aria-label": "Mark " + (i + 1), html: '<svg viewBox="0 0 24 24">' + g + "</svg>", onclick: function () {
+        B.set("members", S.uid, Object.assign({}, S.me, { av: i })).then(function () { toast("Mark saved"); }, function () { toast("Could not save"); }); } });
+    }));
+  }
+  function nearMe(s) {
+    var m = S.members[s.orgId] || {}, me = S.me || {};
+    if (!me.town && !me.pin) return false;
+    return (me.town && m.town === me.town) || (me.pin && m.pin && String(m.pin).slice(0, 3) === String(me.pin).slice(0, 3));
+  }
+  var CAT_SCENE = { Environment: "clean", Food: "food", Elders: "elders", Children: "read", Health: "health", Safety: "safety" };
+  function viewWelcome() {
+    var m = S.me, first = m.name.split(" ")[0], isOrg = !!m.org, rows = rowsFor(S.uid);
+    var w = h("div", { class: "wel" });
+    var left = h("div", {}, h("div", { class: "kick mono", text: "Registered", style: "font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)" }),
+      h("h1", { text: "You are in, " + first + "." }),
+      h("p", { class: "lead", text: "Your record starts today. Every hour an organiser signs off is added to it, with a certificate." }),
+      h("div", { class: "card" },
+        h("div", { style: "display:flex;gap:12px;align-items:center" }, avatar(m, 48), h("div", { style: "min-width:0" }, h("b", { text: isOrg && m.kind === "group" ? m.org.name : m.name }), h("p", { style: "color:var(--muted);font-size:.9rem", text: (isOrg && m.kind === "group" ? "Organiser" : "Volunteer" + (isOrg ? " and organiser" : "")) + " · " + placeOf(m) + (m.pin ? " " + m.pin : "") }))),
+        h("h2", { text: "Pick a mark for your profile", style: "margin-top:6px" }), avPicker(),
+        h("div", { class: "btns", style: "margin-top:6px" }, h("a", { class: "btn sm ghost", href: "#profile", text: "Open my profile" }))),
+      h("div", { class: "card" }, h("h2", { text: "Next steps" }),
+        h("ol", { class: "steps" },
+          h("li", { class: typeof m.av === "number" ? "done" : "" }, h("span", { text: "Pick a mark for your profile." })),
+          h("li", { class: rows.length ? "done" : "" }, h("span", {}, h("a", { href: "#shifts", text: "Find a shift" }), " near you and ask to join. The organiser confirms.")),
+          h("li", { class: "" }, h("span", {}, isOrg ? h("a", { href: "#organise", text: "Post your first shift" }) : h("a", { href: "#join-group", text: "Start organising" }), isOrg ? " from a ready-made template." : " if you lead a group or drive of your own.")))),
+      h("div", { class: "btns", style: "margin-top:18px" }, h("a", { class: "btn", href: "#home", text: "Go to my dashboard" })));
+    w.appendChild(left); w.appendChild(h("div", { class: "art", html: pic("plant", "", 0.1) })); return w;
+  }
+  function greet() { var hr = new Date().getHours(); return hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"; }
+  function viewHome() {
+    var m = S.me, now = Date.now(), first = m.name.split(" ")[0], isOrg = !!m.org, rows = rowsFor(S.uid), t = totals(rows), w = h("div");
+    var open = D.shifts.filter(function (s) { return !s.cancelled && endOf(s) > now && s.orgId !== S.uid; });
+    var near = open.filter(nearMe).sort(function (a, b) { return a.start - b.start; });
+    w.appendChild(h("div", { class: "dash-h" }, h("div", {}, h("h1", { text: greet() + ", " + first + "." }), h("p", { text: placeOf(m) + (m.pin ? " " + m.pin : "") + " · " + plural(near.length, "open shift") + " near you" })), h("div", { class: "stats" }, stat(t.hrs, "verified hours"), stat(t.n, "shifts done"), stat(rows.filter(function (r) { return !r.s.cancelled && endOf(r.s) > now && r.state !== "declined"; }).length, "coming up"))));
+    var up = rows.filter(function (r) { return !r.s.cancelled && endOf(r.s) > now && r.state !== "declined"; }).sort(function (a, b) { return a.s.start - b.s.start; })[0];
+    if (up) { var st = statusOf(up); w.appendChild(h("div", { class: "next" }, h("div", {}, h("div", { class: "mono", style: "font-size:.8rem;color:var(--muted)", text: "YOUR NEXT SHIFT · " + fmtDay(up.s.start) + " " + fmtTime(up.s.start) }), h("b", { text: up.s.title }), h("div", { style: "color:var(--muted);font-size:.9rem", text: orgName(up.s.orgId) + " · " + up.s.place })), h("span", { class: "st " + st.c, text: st.t }))); }
+    var pend = 0; if (isOrg) D.shifts.forEach(function (s) { if (s.orgId === S.uid && !s.cancelled && endOf(s) > now) pend += ofState(s.id, "pending").length; });
+    if (pend) w.appendChild(h("div", { class: "next" }, h("b", { text: plural(pend, "volunteer request") + " waiting for you" }), h("a", { class: "btn sm", href: "#organise", text: "Review requests" })));
+    w.appendChild(h("div", { class: "go-grid" },
+      h("div", { class: "gocard" }, h("div", { html: ill("community") }), h("h2", { text: "Find volunteering" }), h("p", { text: "Pick a task close to home, ask to join, turn up. Hours go into your record." }), h("a", { class: "btn", href: "#shifts", text: "Browse shifts" })),
+      h("div", { class: "gocard" }, h("div", { html: ill("board") }), h("h2", { text: "Organise volunteering" }), h("p", { text: isOrg ? "Post a task from a template, confirm who joins, sign off who came." : "Run a drive, a camp or a weekly task. Set up your group in a few minutes." }), h("a", { class: "btn", href: isOrg ? "#organise" : "#join-group", text: isOrg ? "Post a shift" : "Start organising" }))));
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: near.length ? "Near you" : "Open now" }), h("a", { href: "#shifts", text: "See all" })));
+    var list = (near.length ? near : open.sort(function (a, b) { return a.start - b.start; })).slice(0, 4);
+    if (!list.length) w.appendChild(h("div", { class: "empty" }, "No open shifts yet. Be the first to post one."));
+    list.forEach(function (s) { w.appendChild(shiftRow(s)); });
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Browse by activity" })));
+    w.appendChild(h("div", { class: "cat-grid" }, CAUSES.map(function (c) {
+      var n = open.filter(function (s) { return s.cause === c; }).length;
+      return h("button", { type: "button", class: "cat", onclick: function () { S.f.cause = c; location.hash = "shifts"; } }, h("div", { html: ill(CAT_SCENE[c]) }), h("b", { text: c }), h("span", { text: n ? plural(n, "open shift") : "None right now" }));
+    })));
+    var wc = weekCard(); if (wc) { w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "This week's story" }))); w.appendChild(wc); }
+    return w;
+  }
+  var TPL = [
+    { n: "Lane clean-up", sc: "clean", cause: "Environment", hours: 2, spots: 10, title: "Clean-up of lanes and the park edge", desc: "Gloves and bags provided. Bring water and wear closed shoes. We sort plastic from the rest." },
+    { n: "Plant saplings", sc: "plant", cause: "Environment", hours: 3, spots: 8, title: "Plant and water saplings", desc: "Digging and watering. Wear shoes you do not mind getting muddy. Tools provided." },
+    { n: "Pack food boxes", sc: "food", cause: "Food", hours: 3, spots: 8, title: "Pack and hand out food boxes", desc: "Sort rice, dal and oil into boxes for families on our list. Wash hands first." },
+    { n: "Read with children", sc: "read", cause: "Children", hours: 2, spots: 6, title: "Read aloud and help with homework", desc: "Groups of five children, one volunteer each. Patience matters more than subject knowledge." },
+    { n: "Time with elders", sc: "elders", cause: "Elders", hours: 2, spots: 5, title: "An afternoon with elders", desc: "Talk, read the paper aloud, play cards. Two volunteers per home visit." },
+    { n: "Health camp help", sc: "health", cause: "Health", hours: 4, spots: 8, title: "Help run a health camp desk", desc: "Registration, queues and water. Medical skills are welcome but not needed." },
+    { n: "Street light survey", sc: "safety", cause: "Safety", hours: 2, spots: 8, title: "Street light survey after dark", desc: "Walk assigned lanes in pairs and note every light that is out. We send the list to the ward office." }
+  ];
+  function templates() {
+    var d = dr("shift");
+    return h("div", {}, h("div", { class: "sec-h" }, h("span", { text: "Start from a template" })),
+      h("div", { class: "tpl-grid" }, TPL.map(function (x) {
+        return h("button", { type: "button", class: "tpl", onclick: function () { d.title = x.title; d.cause = x.cause; d.hours = x.hours; d.spots = x.spots; d.desc = x.desc; render(); setTimeout(function () { var e = document.getElementById("shift-date"); if (e) e.scrollIntoView({ block: "center" }); }, 30); } },
+          h("div", { html: ill(x.sc) }), h("b", { text: x.n }), h("span", { text: x.hours + " hrs · " + x.spots + " people · " + x.cause }));
+      })),
+      h("ul", { class: "tips" }, h("li", { text: "One clear task, one meeting spot, a fixed end time." }), h("li", { text: "Say what to bring and wear. People turn up when they know." }), h("li", { text: "Confirm requests the same day. Sign off hours after the shift." })));
+  }
+
+  function viewShifts() {
+    var now = Date.now();
+    var all = D.shifts.filter(function (s) { return !s.cancelled && endOf(s) > now; });
+    var open = all.reduce(function (a, s) { return a + Math.max(0, left(s)); }, 0);
+    var orgs = Object.keys(S.members).filter(function (k) { return S.members[k].org; }).length;
+    var w = h("div");
+    if (false && S.me) w.appendChild(h("div", { class: "banner dark" }, h("span", { text: "You are in, " + S.me.name.split(" ")[0] + ". Browse shifts and ask to join. The organiser confirms every request." }),
+      !S.me.org ? h("a", { class: "btn sm", href: "#join-group", text: "Start organising" }) : h("a", { class: "btn sm", href: "#organise", text: "Post a shift" })));
+    w.appendChild(h("section", { class: "hero" },
+      h("div", {}, h("h1", { text: "Give two hours this week." }),
+        h("p", { text: "Pick a shift, ask to join, turn up. Once the organiser confirms you and signs off your hours, they go into your record with a certificate." }),
+        h("div", { class: "figs" }, fig(open, "spots open"), fig(all.length, "upcoming shifts"), fig(orgs, "organisations"))),
+      h("div", { class: "art art-lite", html: pic("clean", "", 0.1) })));
+    var wc = weekCard(); if (wc) w.appendChild(wc);
+    w.appendChild(h("div", { class: "filters" },
+      h("div", { class: "chips" }, ["All"].concat(CAUSES).map(function (c) { return h("button", { type: "button", class: "chip", "aria-pressed": String(S.f.cause === c), text: c, onclick: function () { S.f.cause = c; render(); } }); })),
+      h("input", { id: "q", class: "q", type: "search", placeholder: "Search task, area or organisation", "aria-label": "Search shifts", value: S.f.q, oninput: function (e) { S.f.q = e.target.value; renderList(); } })));
+    w.appendChild(h("div", { id: "shiftlist" })); setTimeout(renderList, 0);
+    return w;
+  }
+  function renderList() {
+    var box = $("#shiftlist"); if (!box) return;
+    var now = Date.now(), q = S.f.q.trim().toLowerCase();
+    var ls = D.shifts.filter(function (s) {
+      if (s.cancelled || endOf(s) <= now) return false;
+      if (S.f.cause !== "All" && s.cause !== S.f.cause) return false;
+      return !q || (s.title + " " + (s.area || "") + " " + s.place + " " + orgName(s.orgId) + " " + s.cause).toLowerCase().indexOf(q) > -1;
+    }).sort(function (a, b) { return a.start - b.start; });
+    box.textContent = "";
+    if (!ls.length) {
+      box.appendChild(h("div", { class: "empty" }, h("b", { text: D.shifts.length ? "No shifts match." : "No shifts posted yet." }),
+        D.shifts.length ? "Try another cause or clear the search." : (S.me && S.me.org ? h("span", {}, "Post the first one from ", h("a", { href: "#organise", text: "Run shifts" }), ".") : "Organisations post shifts here. Register as one, or start organising from your profile.")));
+      return;
+    }
+    var last = "";
+    ls.forEach(function (s) { var dl = fmtDay(s.start); if (dl !== last) { box.appendChild(h("div", { class: "day", text: dl })); last = dl; } box.appendChild(shiftRow(s)); });
+  }
+  function myReq(s) { return (D.req[s.id] || []).filter(function (r) { return r.uid === S.uid; })[0] || null; }
+  function shiftRow(s) {
+    var n = left(s), mine = myReq(s), m = S.members[s.orgId] || {}, perk = s.reward || (m.org && m.org.perks && m.org.perks.length ? list(m.org.perks) : "");
+    var row = h("article", { class: "row c-" + s.cause }, icon(s.cause, 34),
+      h("div", { style: "min-width:0" },
+        h("div", { class: "when mono", text: fmtTime(s.start) + " · " + plural(s.hours, "hr") }),
+        h("h3", { text: s.title }), h("p", { class: "sub", text: orgName(s.orgId) + " · " + s.place + (s.area ? ", " + s.area : "") }),
+        s.desc ? h("p", { class: "desc", text: s.desc }) : null,
+        h("div", { class: "tags" }, h("span", { class: "tag", text: s.cause }), perk ? h("span", { class: "tag get", text: "You get: " + perk }) : null, s.ex ? h("span", { class: "tag", text: "example" }) : null)),
+      h("div", { class: "act" }, h("span", { class: "spots mono" + (n > 0 && n <= 2 ? " low" : ""), text: n <= 0 ? "Full" : n + " left" }), actionBtn(s, n, mine)));
+    if (S.openId === s.id && !mine && S.me) row.appendChild(joinPanel(s));
+    return row;
+  }
+  function actionBtn(s, n, mine) {
+    if (!S.me) return h("a", { class: "btn sm", href: "#register", text: "Register to join" });
+    if (s.orgId === S.uid) return h("a", { class: "btn sm ghost", href: "#organise", text: "Manage" });
+    if (mine) {
+      var st = statusOf({ s: s, state: mine.state, mark: mine.mark });
+      return h("div", { class: "act" }, h("span", { class: "st " + st.c, text: st.t }), h("button", { class: "btn sm ghost", type: "button", text: "Withdraw", onclick: function () { mutate("signups", function (d) { delete (d.items || {})[s.id]; }).then(function () { toast("Request withdrawn"); }); } }));
+    }
+    if (n <= 0) return h("button", { class: "btn sm", type: "button", disabled: true, text: "Full" });
+    return h("button", { class: "btn sm", type: "button", text: "Ask to join", onclick: function () { S.openId = s.id; render(); } });
+  }
+  function joinPanel(s) {
+    var p = S.priv || {}, contact = p.phone || p.email || "", isPerson = !!p.age;
+    var cC = h("input", { type: "checkbox", id: "c1-" + s.id }), cD = h("input", { type: "checkbox", id: "c2-" + s.id }), cH = h("input", { type: "checkbox", id: "c3-" + s.id });
+    cC.checked = !!contact; cD.checked = true; cH.checked = false;
+    return h("div", { class: "panel" },
+      h("p", { text: "You are asking to join " + s.title + " on " + fmtDay(s.start) + " at " + fmtTime(s.start) + ". " + orgName(s.orgId) + " has to confirm before you are on the list. Choose what they can see:" }),
+      contact ? h("label", { class: "check", for: cC.id }, cC, "My contact (" + contact + ")") : h("p", { text: "You have not added a phone or email, so the organiser cannot reach you." }),
+      isPerson ? h("label", { class: "check", for: cD.id }, cD, "My details: age, gender, skills, languages, availability, medical skills") : null,
+      isPerson && (p.limits || p.emName) ? h("label", { class: "check", for: cH.id }, cH, "My health note and emergency contact (only if it matters for this task)") : null,
+      h("div", { class: "btns" },
+        h("button", { class: "btn sm", type: "button", text: "Send request", onclick: function () {
+          var card = { area: S.me.area }, ap = S.priv || {};
+          if (isPerson && cD.checked) { card.age = ap.age; card.gender = ap.gender; card.skills = ap.skills; card.med = ap.med; card.langs = ap.langs; card.days = ap.days; card.slots = ap.slots; card.blood = ap.blood; card.exp = ap.exp; }
+          if (isPerson && cH.checked) { card.limits = ap.limits; card.emName = ap.emName; card.emPhone = ap.emPhone; }
+          mutate("signups", function (d) { d.items = d.items || {}; d.items[s.id] = { at: Date.now(), name: S.me.name, contact: cC.checked ? contact : "", orgId: s.orgId, card: card }; }).then(function () { toast("Request sent. Waiting for the organiser."); });
+          S.openId = null; render(); } }),
+        h("button", { class: "btn sm ghost", type: "button", text: "Not now", onclick: function () { S.openId = null; render(); } })));
+  }
+
+  /* ---------- stories (added by the admin) ---------- */
+  var STORY_PICS = [["read", "Teaching and children"], ["health", "Health workers"], ["clean", "Cleaning together"], ["food", "Giving food and supplies"], ["elders", "Caring for elders"], ["animals", "Feeding animals"], ["plant", "Planting"], ["safety", "Safer streets"], ["community", "Whole community"]];
+  function weekLabel(ts) { var d = new Date(ts); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return "Week of " + d.toLocaleDateString("en-IN", { day: "numeric", month: "long" }); }
+  function storiesSorted() { return Object.keys(S.stories).map(function (id) { return Object.assign({ id: id }, S.stories[id]); }).sort(function (a, b) { return b.at - a.at; }); }
+  function storyPic(k) { return h("div", { html: pic(ILL.S[ART[k] || k] ? k : "read", "", 0.1, true) }); }
+  function storyForm() {
+    var K = "story", d = dr(K), err = h("div", { class: "err", role: "alert" });
+    var form = h("form", { class: "form", novalidate: true },
+      fld(K, "title", "Headline", { max: 90, full: true, ph: "e.g. Door to door on vaccination day" }),
+      fld(K, "who", "Whose work is this", { max: 90, full: true, ph: "e.g. ASHA workers of Ward 4, Duliajan" }),
+      fld(K, "text", "The story", { tag: "textarea", max: 1500, rows: 7, full: true, hint: "Leave a blank line between paragraphs." }),
+      fld(K, "pic", "Drawing", { options: STORY_PICS.map(function (p) { return p[1]; }), def: STORY_PICS[0][1] }),
+      h("div", { class: "full" }, err), h("div", { class: "full" }, h("button", { class: "btn", type: "submit", text: "Publish story" })));
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if ((d.title || "").trim().length < 5) { err.textContent = "Add a headline."; return; }
+      if ((d.text || "").trim().length < 30) { err.textContent = "Write at least a few sentences."; return; }
+      var key = (STORY_PICS.filter(function (p) { return p[1] === d.pic; })[0] || STORY_PICS[0])[0];
+      B.set("stories", "st" + Date.now().toString(36) + uid8(), { title: d.title.trim(), who: (d.who || "").trim(), text: d.text.trim(), pic: key, at: Date.now() })
+        .then(function () { S.draft.story = null; toast("Story published"); render(); }, function () { err.textContent = "Could not publish. Only editors of this page can add stories."; });
+    });
+    return h("div", {}, h("div", { class: "sec-h" }, h("span", { text: "Add a story" }), h("span", { text: "Admin only" })), form, h("p", { class: "admin-note", text: "Only people with edit access to this page see this form. Everyone else just reads." }));
+  }
+  function viewStories() {
+    var w = h("div", {}, h("div", { class: "page-h" }, h("h1", { text: "Stories of the week" }), h("p", { text: "Each week we share what someone in the community did for the people around them." })));
+    if (S.isAdmin) w.appendChild(storyForm());
+    var ls = storiesSorted();
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Latest" }), h("span", { text: plural(ls.length, "story").replace("storys", "stories") })));
+    if (!ls.length) w.appendChild(h("div", { class: "empty" }, h("b", { text: "No stories yet." }), S.isAdmin ? "Publish the first one above." : "The first one will appear here soon."));
+    ls.forEach(function (st) {
+      w.appendChild(h("article", { class: "story" }, storyPic(st.pic),
+        h("div", {}, h("div", { class: "wk", text: weekLabel(st.at) + (st.ex ? " · example" : "") }), h("h2", { text: st.title }), st.who ? h("p", { class: "who", text: st.who }) : null,
+          String(st.text || "").split(/\n\s*\n/).map(function (p) { return h("p", { class: "body", text: p }); }),
+          S.isAdmin ? (S.delStory === st.id ? h("div", { class: "btns", style: "margin-top:12px" }, h("button", { class: "btn sm danger", type: "button", text: "Yes, delete", onclick: function () { B.del("stories", st.id).then(function () { S.delStory = null; toast("Story deleted"); render(); }); } }), h("button", { class: "btn sm ghost", type: "button", text: "Keep", onclick: function () { S.delStory = null; render(); } }))
+            : h("p", { style: "margin-top:12px" }, h("button", { class: "link", type: "button", text: "Delete this story", onclick: function () { S.delStory = st.id; render(); } }))) : null)));
+    });
+    return w;
+  }
+  function weekCard() {
+    var st = storiesSorted()[0]; if (!st) return null;
+    return h("a", { class: "week-card", href: "#stories" }, storyPic(st.pic),
+      h("div", {}, h("div", { class: "wk", text: "This week · " + weekLabel(st.at).replace("Week of ", "") }), h("h3", { text: st.title }), h("p", { text: cut(st.who || String(st.text).split("\n")[0], 110) })));
+  }
+
+  /* ---------- views: organisations ---------- */
+  function orgStats(oid) {
+    var it = ((S.shifts[oid] || {}).items) || {}, marks = ((S.attendance[oid] || {}).marks) || {}, hrs = 0, vols = {};
+    Object.keys(marks).forEach(function (k) { if (marks[k] > 0) { hrs += marks[k]; vols[k.split("__")[1]] = 1; } });
+    return { shifts: Object.keys(it).filter(function (k) { return !it[k].cancelled; }).length, hrs: hrs, vols: Object.keys(vols).length };
+  }
+  function viewOrgs() {
+    var ids = Object.keys(S.members).filter(function (k) { return S.members[k].org; });
+    var w = h("div", {}, h("div", { class: "page-h" }, h("h1", { text: "Organisations" }), h("p", { text: "Groups that run shifts here. Hours only count when the organiser signs them off." })));
+    if (!ids.length) { w.appendChild(h("div", { class: "empty" }, h("b", { text: "No organisations yet." }), "Be the first. Register as an organisation or group.")); return w; }
+    var ls = h("div", { class: "cardlist" });
+    ids.forEach(function (oid) {
+      var m = S.members[oid], o = m.org, st = orgStats(oid);
+      ls.appendChild(h("article", { class: "org" }, icon("Other", 36), h("h3", { text: o.name }), h("p", { class: "m mono", text: o.type || "" }), h("p", { text: o.about || "" }),
+        o.perks && o.perks.length ? h("div", { class: "tags" }, o.perks.map(function (p) { return h("span", { class: "tag get", text: p }); })) : null,
+        o.badge ? h("p", { class: "m", text: "Own badge: " + o.badge }) : null,
+        h("div", { class: "m mono", text: (m.area || "") + (m.area ? " · " : "") + plural(st.shifts, "shift") + " · " + plural(st.hrs, "volunteer hr") }),
+        h("button", { class: "link", type: "button", text: "See their shifts", onclick: function () { S.f.q = o.name; S.f.cause = "All"; location.hash = "shifts"; } })));
+    });
+    w.appendChild(ls); return w;
+  }
+
+  /* ---------- views: register ---------- */
+  function viewRegister() {
+    return h("section", { class: "entry" },
+      h("div", {}, h("h1", { text: "Join Open Shifts" }), h("p", { class: "lead", text: "Choose how you want to take part. It takes about two minutes." }),
+        h("div", { class: "choose" },
+          h("a", { class: "choice", href: "#join-volunteer" }, h("b", { text: "I am a volunteer" }), h("span", { text: "Give a few hours near you." }), h("i", { text: "→" })),
+          h("a", { class: "choice", href: "#join-group" }, h("b", { text: "We are an organisation or group" }), h("span", { text: "Post shifts and confirm volunteers." }), h("i", { text: "→" }))),
+        h("p", { class: "small", text: S.mode === "live" ? "Already registered? You are signed in through your Claude account, so there is nothing to log in to. Your profile opens by itself." : "Preview mode: your profile stays in this browser." })),
+      h("div", { class: "art art-lite", html: pic("community", "rad", 0.1) }));
+  }
+
+  /* ---------- towns and pincodes ---------- */
+  var PLACE_DATA = [
+    "Duliajan|Dibrugarh|Assam|786", "Dibrugarh|Dibrugarh|Assam|786", "Naharkatia|Dibrugarh|Assam|786", "Chabua|Dibrugarh|Assam|786", "Namrup|Dibrugarh|Assam|786", "Moran|Dibrugarh|Assam|785",
+    "Tinsukia|Tinsukia|Assam|786", "Digboi|Tinsukia|Assam|786", "Margherita|Tinsukia|Assam|786", "Makum|Tinsukia|Assam|786", "Doomdooma|Tinsukia|Assam|786", "Sadiya|Tinsukia|Assam|786",
+    "Sivasagar|Sivasagar|Assam|785", "Nazira|Sivasagar|Assam|785", "Sonari|Charaideo|Assam|785", "Jorhat|Jorhat|Assam|785", "Golaghat|Golaghat|Assam|785", "Bokakhat|Golaghat|Assam|785", "Dergaon|Golaghat|Assam|785",
+    "Tezpur|Sonitpur|Assam|784", "Biswanath Chariali|Biswanath|Assam|784", "Mangaldoi|Darrang|Assam|784", "Nagaon|Nagaon|Assam|782", "Hojai|Hojai|Assam|782", "Diphu|Karbi Anglong|Assam|782",
+    "Guwahati|Kamrup Metropolitan|Assam|781", "Barpeta|Barpeta|Assam|781", "Nalbari|Nalbari|Assam|781", "Dhubri|Dhubri|Assam|783", "Goalpara|Goalpara|Assam|783", "Bongaigaon|Bongaigaon|Assam|783", "Kokrajhar|Kokrajhar|Assam|783",
+    "North Lakhimpur|Lakhimpur|Assam|787", "Dhemaji|Dhemaji|Assam|787", "Silchar|Cachar|Assam|788", "Karimganj|Sribhumi|Assam|788", "Hailakandi|Hailakandi|Assam|788", "Haflong|Dima Hasao|Assam|788",
+    "Itanagar|Papum Pare|Arunachal Pradesh|791", "Naharlagun|Papum Pare|Arunachal Pradesh|791", "Pasighat|East Siang|Arunachal Pradesh|791", "Shillong|East Khasi Hills|Meghalaya|793", "Tura|West Garo Hills|Meghalaya|794",
+    "Imphal|Imphal West|Manipur|795", "Aizawl|Aizawl|Mizoram|796", "Kohima|Kohima|Nagaland|797", "Dimapur|Dimapur|Nagaland|797", "Agartala|West Tripura|Tripura|799", "Gangtok|Gangtok|Sikkim|737",
+    "Delhi|New Delhi|Delhi|110", "Gurugram|Gurugram|Haryana|122", "Faridabad|Faridabad|Haryana|121", "Panipat|Panipat|Haryana|132", "Ambala|Ambala|Haryana|133", "Chandigarh|Chandigarh|Chandigarh|160",
+    "Ludhiana|Ludhiana|Punjab|141", "Amritsar|Amritsar|Punjab|143", "Jalandhar|Jalandhar|Punjab|144", "Patiala|Patiala|Punjab|147", "Shimla|Shimla|Himachal Pradesh|171", "Jammu|Jammu|Jammu and Kashmir|180", "Srinagar|Srinagar|Jammu and Kashmir|190", "Leh|Leh|Ladakh|194",
+    "Dehradun|Dehradun|Uttarakhand|248", "Haridwar|Haridwar|Uttarakhand|249", "Lucknow|Lucknow|Uttar Pradesh|226", "Kanpur|Kanpur Nagar|Uttar Pradesh|208", "Varanasi|Varanasi|Uttar Pradesh|221", "Agra|Agra|Uttar Pradesh|282", "Prayagraj|Prayagraj|Uttar Pradesh|211",
+    "Meerut|Meerut|Uttar Pradesh|250", "Ghaziabad|Ghaziabad|Uttar Pradesh|201", "Noida|Gautam Buddha Nagar|Uttar Pradesh|201", "Gorakhpur|Gorakhpur|Uttar Pradesh|273",
+    "Jaipur|Jaipur|Rajasthan|302", "Jodhpur|Jodhpur|Rajasthan|342", "Udaipur|Udaipur|Rajasthan|313", "Kota|Kota|Rajasthan|324", "Ajmer|Ajmer|Rajasthan|305",
+    "Ahmedabad|Ahmedabad|Gujarat|380", "Surat|Surat|Gujarat|395", "Vadodara|Vadodara|Gujarat|390", "Rajkot|Rajkot|Gujarat|360",
+    "Mumbai|Mumbai|Maharashtra|400", "Thane|Thane|Maharashtra|400", "Pune|Pune|Maharashtra|411", "Nagpur|Nagpur|Maharashtra|440", "Nashik|Nashik|Maharashtra|422", "Aurangabad|Chhatrapati Sambhajinagar|Maharashtra|431", "Panaji|North Goa|Goa|403", "Margao|South Goa|Goa|403",
+    "Bhopal|Bhopal|Madhya Pradesh|462", "Indore|Indore|Madhya Pradesh|452", "Jabalpur|Jabalpur|Madhya Pradesh|482", "Gwalior|Gwalior|Madhya Pradesh|474", "Raipur|Raipur|Chhattisgarh|492", "Bilaspur|Bilaspur|Chhattisgarh|495", "Bhilai|Durg|Chhattisgarh|490",
+    "Patna|Patna|Bihar|800", "Gaya|Gaya|Bihar|823", "Bhagalpur|Bhagalpur|Bihar|812", "Muzaffarpur|Muzaffarpur|Bihar|842", "Ranchi|Ranchi|Jharkhand|834", "Jamshedpur|East Singhbhum|Jharkhand|831", "Dhanbad|Dhanbad|Jharkhand|826", "Bokaro|Bokaro|Jharkhand|827",
+    "Kolkata|Kolkata|West Bengal|700", "Howrah|Howrah|West Bengal|711", "Siliguri|Darjeeling|West Bengal|734", "Durgapur|Paschim Bardhaman|West Bengal|713", "Asansol|Paschim Bardhaman|West Bengal|713", "Kharagpur|Paschim Medinipur|West Bengal|721", "Malda|Malda|West Bengal|732", "Cooch Behar|Cooch Behar|West Bengal|736",
+    "Bhubaneswar|Khordha|Odisha|751", "Cuttack|Cuttack|Odisha|753", "Rourkela|Sundargarh|Odisha|769", "Puri|Puri|Odisha|752",
+    "Hyderabad|Hyderabad|Telangana|500", "Warangal|Warangal|Telangana|506", "Visakhapatnam|Visakhapatnam|Andhra Pradesh|530", "Vijayawada|NTR|Andhra Pradesh|520", "Tirupati|Tirupati|Andhra Pradesh|517",
+    "Bengaluru|Bengaluru Urban|Karnataka|560", "Mysuru|Mysuru|Karnataka|570", "Hubballi|Dharwad|Karnataka|580", "Mangaluru|Dakshina Kannada|Karnataka|575", "Belagavi|Belagavi|Karnataka|590",
+    "Chennai|Chennai|Tamil Nadu|600", "Coimbatore|Coimbatore|Tamil Nadu|641", "Madurai|Madurai|Tamil Nadu|625", "Tiruchirappalli|Tiruchirappalli|Tamil Nadu|620", "Salem|Salem|Tamil Nadu|636", "Puducherry|Puducherry|Puducherry|605",
+    "Thiruvananthapuram|Thiruvananthapuram|Kerala|695", "Kochi|Ernakulam|Kerala|682", "Kozhikode|Kozhikode|Kerala|673", "Thrissur|Thrissur|Kerala|680", "Kannur|Kannur|Kerala|670", "Kollam|Kollam|Kerala|691", "Port Blair|South Andaman|Andaman and Nicobar|744"
+  ];
+  var PLACES = PLACE_DATA.map(function (l) { var p = l.split("|"); return { n: p[0], d: p[1], s: p[2], p: [p[3]] }; });
+  var PIN_REGIONS = [[11, 11, "Delhi"], [12, 13, "Haryana"], [14, 16, "Punjab or Chandigarh"], [17, 17, "Himachal Pradesh"], [18, 19, "Jammu and Kashmir or Ladakh"], [20, 28, "Uttar Pradesh or Uttarakhand"], [30, 34, "Rajasthan"], [36, 39, "Gujarat"], [40, 44, "Maharashtra or Goa"], [45, 48, "Madhya Pradesh"], [49, 49, "Chhattisgarh"], [50, 50, "Telangana"], [51, 53, "Andhra Pradesh"], [56, 59, "Karnataka"], [60, 64, "Tamil Nadu or Puducherry"], [67, 69, "Kerala"], [70, 74, "West Bengal, Sikkim or Andaman"], [75, 77, "Odisha"], [78, 78, "Assam"], [79, 79, "the North-East"], [80, 85, "Bihar or Jharkhand"]];
+  function stateOfPin(p) {
+    if (!/^[1-9]\d{5}$/.test(p || "")) return null;
+    var n = +p.slice(0, 2);
+    for (var i = 0; i < PIN_REGIONS.length; i++) if (n >= PIN_REGIONS[i][0] && n <= PIN_REGIONS[i][1]) return PIN_REGIONS[i][2];
+    return null;
+  }
+  function placeSearch(term, pin) {
+    term = term.trim().toLowerCase(); var pre = (pin || "").slice(0, 3), out = [];
+    PLACES.forEach(function (p) {
+      var n = p.n.toLowerCase(), hit = term ? (n.indexOf(term) > -1 || p.d.toLowerCase().indexOf(term) === 0) : (pre.length === 3 && p.p.indexOf(pre) > -1);
+      if (hit) out.push({ p: p, rank: (n.indexOf(term) === 0 ? 0 : 2) + (pre.length === 3 && p.p.indexOf(pre) > -1 ? 0 : 1) });
+    });
+    return out.sort(function (a, b) { return a.rank - b.rank || a.p.n.localeCompare(b.p.n); }).slice(0, 8).map(function (x) { return x.p; });
+  }
+  function locPicker(key) {
+    var d = dr(key), wrap = h("div", { class: "loc" });
+    var verdict = h("div", { class: "verdict", "aria-live": "polite" }), res = h("div"), picked = h("div");
+    var pinIn = h("input", { id: key + "-pin", inputmode: "numeric", maxlength: 6, autocomplete: "postal-code", placeholder: "6 digits" }); pinIn.value = d.pin || "";
+    var q = h("input", { id: key + "-town", type: "search", autocomplete: "off", placeholder: "Start typing, e.g. Duliajan" });
+    var qLabel = h("label", { for: key + "-town" }, "Search your town", q);
+    function pick(p) { d.town = p.n; d.district = p.d; d.state = p.s; d.tp = p.p; d.manualTown = false; q.value = ""; paint(); }
+    function paint() {
+      var pin = d.pin || "", st = stateOfPin(pin), msg = "", cls = "";
+      if (pin.length === 6) {
+        if (!st) { msg = "This is not a valid Indian pincode."; cls = "bad"; }
+        else if (d.town && d.tp && d.tp.indexOf(pin.slice(0, 3)) < 0) { msg = "This pincode does not belong to " + d.town + ". Check it, or choose another town."; cls = "bad"; }
+        else { msg = "Valid pincode · " + st; cls = "ok"; }
+      } else if (pin.length) msg = "A pincode has 6 digits.";
+      else if (d.town && d.tp) msg = "Enter your 6-digit pincode. For " + d.town + " it starts with " + d.tp.join(" or ") + ".";
+      verdict.textContent = msg; verdict.className = "verdict " + cls;
+      picked.textContent = ""; res.textContent = ""; qLabel.hidden = !!d.town;
+      if (d.town) {
+        picked.appendChild(h("div", { class: "picked" }, h("span", {}, h("b", { text: d.town }), (d.district ? " · " + d.district : "") + (d.state ? ", " + d.state : "") + (d.manualTown ? " (typed by you)" : "")),
+          h("button", { class: "link", type: "button", text: "Change town", onclick: function () { d.town = ""; d.district = ""; d.state = ""; d.tp = null; d.manualTown = false; paint(); q.focus(); } })));
+        return;
+      }
+      var term = q.value.trim(), list = placeSearch(term, pin);
+      if (list.length) {
+        res.appendChild(h("div", { class: "results", role: "listbox" }, list.map(function (p) { return h("button", { type: "button", role: "option", onclick: function () { pick(p); } }, h("span", { text: p.n }), h("small", { text: p.d + ", " + p.s })); })));
+      }
+      if (term.length > 1 && !list.length) {
+        res.appendChild(h("p", { class: "note", text: "We could not find that town in our list. " }));
+      }
+      if (term.length > 1) res.appendChild(h("button", { class: "link", type: "button", text: 'Use "' + term + '" as my town', onclick: function () { d.town = term.replace(/\s+/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); }); d.district = ""; d.state = stateOfPin(d.pin || "") || ""; d.tp = null; d.manualTown = true; paint(); } }));
+    }
+    pinIn.addEventListener("input", function () { d.pin = pinIn.value.replace(/\D/g, "").slice(0, 6); pinIn.value = d.pin; paint(); });
+    q.addEventListener("input", paint);
+    wrap.appendChild(h("div", { class: "pinrow" }, h("label", { for: key + "-pin" }, "Pincode (required)", pinIn), verdict));
+    wrap.appendChild(qLabel); wrap.appendChild(res); wrap.appendChild(picked);
+    paint(); return wrap;
+  }
+  function locCheck(d) {
+    var pin = d.pin || "";
+    if (!/^[1-9]\d{5}$/.test(pin)) return "Enter your 6-digit pincode. It is required.";
+    var st = stateOfPin(pin); if (!st) return "That pincode does not exist in India. Check it and try again.";
+    if (!d.town) return "Search for your town and pick it, or use your own town name.";
+    if (d.tp && d.tp.indexOf(pin.slice(0, 3)) < 0) return "That pincode does not match " + d.town + ".";
+    if (!d.state) d.state = st;
+    return null;
+  }
+  function placeOf(m) { return [m.area, m.town || m.city, m.state].filter(Boolean).join(", "); }
+  function seedLoc(d) {
+    if (!S.me) return;
+    d.town = S.me.town || S.me.city || ""; d.district = S.me.district || ""; d.state = S.me.state || ""; d.pin = S.me.pin || "";
+    var f = PLACES.filter(function (p) { return p.n === d.town; })[0]; d.tp = f ? f.p : null;
+  }
+
+  /* ---------- registration wizards ---------- */
+  function need(d, id, msg) { return (d[id] == null || String(d[id]).trim() === "") ? msg : null; }
+  function seedPerson() {
+    if (S.draft.person && S.draft.person._seeded) return;
+    var d = S.draft.person = { _seeded: 1, skills: [], causes: [], transport: [], days: [], slots: [], med: [], comfort: [] };
+    if (S.me) { d.name = S.me.name; d.area = S.me.area || ""; seedLoc(d); }
+    else if (S.viewerName) d.name = S.viewerName;
+    var p = S.priv || {}; ["phone", "email", "gender", "age", "travel", "langs", "exp", "hpw", "notice", "blood", "limits", "emName", "emRel", "emPhone"].forEach(function (k) { if (p[k] != null) d[k] = p[k]; });
+    ["skills", "causes", "transport", "days", "slots", "med", "comfort"].forEach(function (k) { if (p[k]) d[k] = p[k].slice(); });
+  }
+  function viewJoinVolunteer() {
+    seedPerson(); var editing = !!S.me, K = "person";
+    var steps = [
+      { title: "About you", hint: "Organisers see your name, and the rest only if you choose to share it.", build: function () { return [
+          fld(K, "name", "Full name", { max: 50, ac: "name", full: true }),
+          chipGroup(K, "gender", "Gender", ["Male", "Female", "Other", "Prefer not to say"], true),
+          fld(K, "age", "Age", { type: "number", min: 10, maxv: 90, im: "numeric" }),
+          fld(K, "phone", "Phone number", { type: "tel", max: 20, ac: "tel", im: "tel" }),
+          fld(K, "email", "Email (optional)", { type: "email", max: 80, ac: "email", full: true })]; },
+        validate: function (d) { return need(d, "name", "Enter your name.") || need(d, "gender", "Choose a gender option.") || (!(+d.age >= 10 && +d.age <= 90) ? "Enter your age." : null) || ((d.phone || "").replace(/\D/g, "").length < 7 ? "Enter a phone number organisers can call." : null) || (d.email && !/^\S+@\S+\.\S+$/.test(d.email) ? "That email does not look right." : null); } },
+      { title: "Where you are", hint: "So we can show you shifts you can actually reach.", build: function () { return [
+          locPicker(K), fld(K, "area", "Street, colony or landmark (optional)", { max: 60, full: true }),
+          fld(K, "travel", "How far will you travel", { options: ["Within 2 km", "Within 5 km", "Within 10 km", "Anywhere in the city"], def: "Within 5 km" }),
+          chipGroup(K, "transport", "How do you get around", ["Walk", "Bicycle", "Two-wheeler", "Car", "Public transport"])]; },
+        validate: function (d) { return locCheck(d); } },
+      { title: "What you can do", hint: "Pick everything that fits. Organisers use this to give you the right task.", build: function () { return [
+          chipGroup(K, "skills", "Skills", SKILLS), chipGroup(K, "causes", "Causes you care about", CAUSES),
+          fld(K, "langs", "Languages you speak", { max: 80, ph: "e.g. Hindi, English, Marathi", full: true }),
+          fld(K, "exp", "Volunteered before? Tell us briefly", { tag: "textarea", max: 300, rows: 3, full: true })]; },
+        validate: function (d) { return (!d.skills.length && !d.causes.length) ? "Pick at least one skill or cause." : null; } },
+      { title: "When you are free", hint: "Rough is fine. You choose each shift yourself.", build: function () { return [
+          chipGroup(K, "days", "Days", DAYS), chipGroup(K, "slots", "Times of day", SLOTS),
+          fld(K, "hpw", "Hours per week you can give", { options: ["1 to 2", "3 to 5", "6 to 10", "More than 10"], def: "3 to 5" }),
+          fld(K, "notice", "Notice you need", { options: ["I can come at short notice", "I need 2 or more days notice"], def: "I need 2 or more days notice" })]; },
+        validate: function (d) { return (!d.days.length || !d.slots.length) ? "Pick at least one day and one time of day." : null; } },
+      { title: "Health and special skills", hint: "Medical skills help in emergencies. The health note is private unless you share it with a specific organiser when you ask to join.", build: function () { return [
+          chipGroup(K, "med", "Medical or care skills", MED, false, "optional"),
+          fld(K, "blood", "Blood group", { options: ["Not sure", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], def: "Not sure" }),
+          chipGroup(K, "comfort", "I am comfortable with", COMFORT, false, "optional"),
+          fld(K, "limits", "Anything an organiser should know so a task does not hurt you", { tag: "textarea", max: 300, rows: 3, full: true, hint: "For example back pain, asthma, allergies. Optional." }),
+          fld(K, "emName", "Emergency contact name", { max: 50 }), fld(K, "emRel", "Relation", { max: 30 }),
+          fld(K, "emPhone", "Emergency contact phone", { type: "tel", max: 20, im: "tel", full: true })]; },
+        validate: function (d) { return need(d, "emName", "Add an emergency contact name.") || ((d.emPhone || "").replace(/\D/g, "").length < 7 ? "Add an emergency contact phone number." : null); } },
+      { title: "Check and finish", cta: editing ? "Save changes" : "Create my profile", hint: editing ? "" : "After this you can ask to join shifts, or start organising your own.", build: function () { var d = S.draft[K]; return [
+          sumRows([["Name", d.name], ["Gender and age", [d.gender, d.age].join(", ")], ["Phone", d.phone], ["Email", d.email], ["Where", [d.area, d.town, d.state].filter(Boolean).join(", ") + " " + (d.pin || "")], ["Can do", list(d.skills)], ["Causes", list(d.causes)], ["Languages", d.langs],
+            ["Free on", list(d.days) + (d.slots.length ? " · " + list(d.slots) : "")], ["Medical skills", list(d.med)], ["Emergency contact", [d.emName, d.emRel, d.emPhone].filter(Boolean).join(", ")]]),
+          consentBox(K, "ok", "I agree that an organiser must confirm each shift I ask to join, and that I choose what each organiser sees when I ask.")]; },
+        validate: function (d) { return d.ok ? null : "Tick the box to continue."; } }];
+    return h("div", {}, h("div", { class: "page-h" }, h("h1", { text: editing ? "Edit your profile" : "Register as a volunteer" }),
+      h("p", { text: S.mode === "live" ? "You are signed in through your Claude account, so there is no password to set." : "Preview mode: your profile stays in this browser." })),
+      wizard(K, steps, function (d, err) {
+        var member = { kind: (S.me && S.me.kind) || "person", name: d.name.trim(), area: (d.area || "").trim(), town: d.town, district: d.district || "", state: d.state || "", pin: d.pin, joined: (S.me && S.me.joined) || Date.now() }; if (S.me && S.me.org) member.org = S.me.org;
+        var priv = Object.assign({}, S.priv || {}); ["phone", "email", "gender", "age", "travel", "langs", "exp", "hpw", "notice", "blood", "limits", "emName", "emRel", "emPhone"].forEach(function (k) { priv[k] = d[k] == null ? "" : d[k]; }); priv.pin = d.pin;
+        priv.age = +d.age; ["skills", "causes", "transport", "days", "slots", "med", "comfort"].forEach(function (k) { priv[k] = d[k]; });
+        saveProfile(member, priv, editing, err);
+      }, editing ? function () { S.draft.person = null; S.editing = false; location.hash = "profile"; } : function () { S.draft.person = null; location.hash = "register"; }));
+  }
+  function seedGroup() {
+    if (S.draft.group && S.draft.group._seeded) return;
+    var d = S.draft.group = { _seeded: 1, causes: [], perks: [], needs: [] };
+    if (S.me) { d.cname = S.me.name; d.area = S.me.area || ""; seedLoc(d); }
+    else if (S.viewerName) d.cname = S.viewerName;
+    var o = S.me && S.me.org; if (o) { d.type = o.type; d.oname = o.name; d.about = o.about; d.causes = (o.causes || []).slice(); d.perks = (o.perks || []).slice(); d.badge = o.badge || ""; d.site = o.site || ""; d.reg = o.reg || ""; d.size = o.size || ""; d.needs = (o.needs || []).slice(); d.serve = o.serve || ""; }
+    var p = S.priv || {}; if (p.phone) d.phone = p.phone; if (p.email) d.email = p.email;
+  }
+  function viewJoinGroup() {
+    seedGroup(); var K = "group", editing = !!(S.me && S.me.org), upgrading = !!S.me && !editing;
+    var steps = [
+      { title: "About your group", hint: "An NGO, a one-time drive, a neighbourhood committee, a college club. If it organises volunteers, it belongs here.", build: function () { return [
+          chipGroup(K, "type", "What kind of group is it", GTYPES, true), fld(K, "oname", "Group or organisation name", { max: 60, full: true }),
+          fld(K, "cname", "Contact person", { max: 50 }), fld(K, "phone", "Contact phone", { type: "tel", max: 20, im: "tel" }),
+          fld(K, "email", "Contact email (optional)", { type: "email", max: 80, full: true })]; },
+        validate: function (d) { return need(d, "type", "Choose what kind of group this is.") || need(d, "oname", "Enter the group name.") || need(d, "cname", "Enter a contact person.") || ((d.phone || "").replace(/\D/g, "").length < 7 ? "Enter a phone number volunteers can reach." : null) || (d.email && !/^\S+@\S+\.\S+$/.test(d.email) ? "That email does not look right." : null); } },
+      { title: "Where you work", build: function () { return [
+          locPicker(K), fld(K, "area", "Street, colony or landmark (optional)", { max: 60, full: true }),
+          fld(K, "serve", "Other areas you cover (optional)", { max: 100, full: true }), fld(K, "site", "Website or social page (optional)", { max: 100, full: true })]; },
+        validate: function (d) { return locCheck(d); } },
+      { title: "What you do", hint: "Volunteers read this before they ask to join.", build: function () { return [
+          chipGroup(K, "causes", "Causes you work on", CAUSES), fld(K, "about", "What does your group do", { tag: "textarea", max: 300, rows: 4, full: true }),
+          fld(K, "size", "Volunteers you usually need per task", { options: ["1 to 5", "6 to 15", "16 to 40", "More than 40"], def: "6 to 15" }),
+          fld(K, "reg", "Registration number (optional)", { max: 40 }), chipGroup(K, "needs", "Special skills you often need", SKILLS.concat(MED), false, "optional")]; },
+        validate: function (d) { return !d.causes.length ? "Pick at least one cause." : ((d.about || "").trim().length < 10 ? "Write a line or two about what your group does." : null); } },
+      { title: "What you give volunteers", hint: "Every volunteer already gets a certificate and badges from us. Add what you give from your side.", build: function () { return [
+          chipGroup(K, "perks", "Rewards", PERKS, false, "optional"),
+          fld(K, "badge", "Your own badge name (optional)", { max: 30, ph: "e.g. Lake Guardian", full: true, hint: "Volunteers with one signed-off shift for you get it in their profile." })]; } },
+      { title: "Check and finish", cta: editing ? "Save changes" : (upgrading ? "Start organising" : "Register my group"), build: function () { var d = S.draft[K]; return [
+          sumRows([["Group", d.oname], ["Type", d.type], ["Contact", [d.cname, d.phone, d.email].filter(Boolean).join(", ")], ["Where", [d.area, d.town, d.state].filter(Boolean).join(", ") + " " + (d.pin || "")], ["Causes", list(d.causes)], ["About", d.about], ["Rewards", list(d.perks)], ["Own badge", d.badge]]),
+          consentBox(K, "ok", "I will confirm or decline each volunteer request, and sign off hours honestly. Volunteers get certificates based on what I sign off.")]; },
+        validate: function (d) { return d.ok ? null : "Tick the box to continue."; } }];
+    return h("div", {}, h("div", { class: "page-h" }, h("h1", { text: editing ? "Edit organiser details" : (upgrading ? "Start organising" : "Register as an organiser") }),
+      h("p", { text: upgrading ? "Your volunteer profile stays as it is. This adds the ability to post shifts." : "Set up your group once, then post as many shifts as you like." })),
+      wizard(K, steps, function (d, err) {
+        var base = S.me || { kind: "group", joined: Date.now() };
+        var member = { kind: base.kind, name: S.me ? S.me.name : d.cname.trim(), area: S.me ? S.me.area : (d.area || "").trim(), town: S.me ? (S.me.town || S.me.city) : d.town, district: S.me ? S.me.district : d.district || "", state: S.me ? S.me.state : d.state || "", pin: S.me ? S.me.pin : d.pin, joined: base.joined || Date.now() };
+        if (S.me && base.kind === "group") { member.name = d.cname.trim(); member.area = (d.area || "").trim(); member.town = d.town; member.district = d.district || ""; member.state = d.state || ""; member.pin = d.pin; }
+        member.org = { name: d.oname.trim(), type: d.type, about: d.about.trim(), causes: d.causes, perks: d.perks, badge: (d.badge || "").trim(), site: (d.site || "").trim(), reg: (d.reg || "").trim(), size: d.size, needs: d.needs, serve: (d.serve || "").trim() };
+        var priv = Object.assign({}, S.priv || {}); if (!S.priv || !S.priv.phone || base.kind === "group") { priv.phone = d.phone; priv.email = d.email || ""; }
+        saveProfile(member, priv, editing, err, "organise");
+      }, function () { S.draft.group = null; S.editing = false; location.hash = S.me ? "profile" : "register"; }));
+  }
+  function saveProfile(member, priv, editing, err, dest) {
+    var wasNew = !S.me; if (S.me && typeof S.me.av === "number") member.av = S.me.av;
+    Promise.all([B.set("members", S.uid, member), B.setPriv(priv)]).then(function () {
+      S.priv = priv; S.draft.person = null; S.draft.group = null; S.editing = false;
+      if (!editing) { toast(wasNew ? "Welcome to Open Shifts" : "You can now post shifts"); }
+      else toast("Saved");
+      location.hash = editing ? "profile" : (wasNew ? "welcome" : (dest || "home")); render();
+    }).catch(function () { S.canWrite = false; err.textContent = "Could not save. This page may be view-only for your account. Ask the page owner for Contributor access."; });
+  }
+
+  /* ---------- views: profile ---------- */
+  function stat(n, l) { return h("div", {}, h("b", { text: String(n) }), h("span", { text: l })); }
+  function viewProfile() {
+    var m = S.me, w = h("div"), rows = rowsFor(S.uid), t = totals(rows), now = Date.now(), p = S.priv || {};
+    w.appendChild(h("div", { class: "id-row" }, avatar(m, 56),
+      h("div", {}, h("h1", { text: m.kind === "group" && m.org ? m.org.name : m.name }),
+        h("p", { text: (m.kind === "group" && m.org ? "Organiser · " + m.name : "Volunteer" + (m.org ? " and organiser" : "")) + " · " + placeOf(m) + (m.pin ? " " + m.pin : "") + " · joined " + fmtShort(m.joined || Date.now()) }),
+        h("p", { text: [p.phone, p.email].filter(Boolean).join(" · ") }))));
+    w.appendChild(h("div", { class: "btns" },
+      h("button", { class: "btn sm ghost", type: "button", text: "Edit profile", onclick: function () { S.editing = true; S.draft.person = null; S.draft.group = null; location.hash = m.kind === "group" ? "join-group" : "join-volunteer"; } }),
+      m.org ? h("a", { class: "btn sm", href: "#organise", text: "Run shifts" }) : h("a", { class: "btn sm", href: "#join-group", text: "Start organising" }),
+      m.org && m.kind === "person" ? h("button", { class: "btn sm ghost", type: "button", text: "Edit organiser details", onclick: function () { S.editing = true; S.draft.group = null; location.hash = "join-group"; } }) : null,
+      h("a", { class: "btn sm ghost", href: "#shifts", text: "Find a shift" })));
+    w.appendChild(h("div", {}, h("b", { text: "Your mark", style: "font-size:.9rem" }), avPicker()));
+    w.appendChild(h("div", { class: "stats" }, stat(t.hrs, "verified hours"), stat(t.n, "shifts completed"), stat(t.orgCount, "organisations helped")));
+    var det = [["Phone", p.phone], ["Email", p.email], ["Gender and age", [p.gender, p.age].filter(Boolean).join(", ")], ["Location", [m.area, m.town || m.city, m.district, m.state].filter(Boolean).join(", ") + (m.pin ? " · " + m.pin : "")],
+      ["Can do", list(p.skills)], ["Causes", list(p.causes)], ["Languages", p.langs], ["Free on", list(p.days) + (p.slots && p.slots.length ? " · " + list(p.slots) : "")], ["Time per week", p.hpw], ["Medical skills", list(p.med)], ["Blood group", p.blood && p.blood !== "Not sure" ? p.blood : ""], ["Emergency contact", [p.emName, p.emRel, p.emPhone].filter(Boolean).join(", ")]];
+    if (m.org) det.push(["Organisation", m.org.name + " · " + (m.org.type || "")], ["Works on", list(m.org.causes)], ["Gives volunteers", list(m.org.perks)], ["Own badge", m.org.badge]);
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Your details" }), h("span", { text: "Only you see this page" })));
+    w.appendChild(sumRows(det));
+    if (S.cert) {
+      var r = rows.filter(function (x) { return x.s.id === S.cert; })[0];
+      if (r && r.mark > 0) {
+        var svg = certSvg(r);
+        w.appendChild(h("div", { class: "cert-wrap" }, h("div", { class: "cert-paper", html: svg }),
+          h("div", { class: "btns" }, S.dl ? h("button", { class: "btn sm", type: "button", text: "Download certificate", onclick: function () {
+            S.dl.save({ filename: "certificate-" + slug(r.s.title) + ".svg", data: svg }).then(function () { toast("Certificate saved"); }, function (e) { if (!e || e.code !== "declined") toast("Could not save the file here"); }); } }) : null,
+            h("button", { class: "btn sm ghost", type: "button", text: "Close", onclick: function () { S.cert = null; render(); } }))));
+      }
+    }
+    var bs = badgesFor(t), earned = bs.filter(function (b) { return b.on; }).length;
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Badges" }), h("span", { text: earned + " of " + bs.length + " earned" })));
+    w.appendChild(h("div", { class: "badges" }, bs.map(function (b) { return h("div", { class: "badge" + (b.on ? "" : " off") }, h("span", { class: "ico", html: badgeSvg(b) }), h("b", { text: b.n }), h("span", { text: b.d })); })));
+    var up = rows.filter(function (r) { return !r.s.cancelled && endOf(r.s) > now; }).reverse();
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Coming up" })));
+    if (!up.length) w.appendChild(h("div", { class: "empty" }, "Nothing booked. ", h("a", { href: "#shifts", text: "Find a shift" }), "."));
+    up.forEach(function (r) {
+      var s = statusOf(r);
+      w.appendChild(h("div", { class: "vol" }, h("div", { class: "n" }, r.s.title, h("small", { text: fmtDay(r.s.start) + " · " + fmtTime(r.s.start) + " · " + orgName(r.s.orgId) + " · " + r.s.place })),
+        h("div", { class: "vctl" }, h("span", { class: "st " + s.c, text: s.t }), h("button", { class: "btn sm ghost", type: "button", text: "Withdraw", onclick: function () { mutate("signups", function (d) { delete d.items[r.s.id]; }); } }))));
+    });
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Your record" })));
+    if (!rows.length) w.appendChild(h("div", { class: "empty" }, h("b", { text: "No hours yet." }), "After a shift, the organiser signs off your attendance. It then appears here with a certificate."));
+    else {
+      var tb = h("table", {}, h("thead", {}, h("tr", {}, ["Date", "Shift", "Organisation", "Hours", "Status", ""].map(function (x) { return h("th", { text: x }); }))), h("tbody"));
+      rows.forEach(function (r) {
+        var s = statusOf(r);
+        tb.lastChild.appendChild(h("tr", {}, h("td", { class: "mono", text: fmtShort(r.s.start) }), h("td", {}, r.s.title, r.item.ex || r.s.ex ? h("small", { class: "note", text: " (example)" }) : null), h("td", { text: orgName(r.s.orgId) }),
+          h("td", { class: "mono", text: r.mark > 0 ? String(r.mark) : "-" }), h("td", { class: "st " + s.c, text: s.t }),
+          h("td", {}, r.mark > 0 ? h("button", { class: "link", type: "button", text: "Certificate", onclick: function () { S.cert = r.s.id; render(); window.scrollTo(0, 0); } }) : null)));
+      });
+      w.appendChild(h("div", { class: "scroll" }, tb));
+    }
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Delete profile" })));
+    if (!S.confirmDel) w.appendChild(h("p", { style: "padding-top:12px" }, h("button", { class: "btn sm danger", type: "button", text: "Delete my profile", onclick: function () { S.confirmDel = true; render(); } })));
+    else w.appendChild(h("div", { class: "panel", style: "margin-top:12px" },
+      h("p", { text: m.org ? "This removes your profile, your sign-ups, your organisation, all your shifts and the confirmations and hours you signed off. Volunteers lose the verified hours from your shifts. This cannot be undone." : "This removes your profile and your sign-ups. This cannot be undone." }),
+      h("div", { class: "btns" }, h("button", { class: "btn sm danger", type: "button", text: "Yes, delete everything", onclick: deleteAll }), h("button", { class: "btn sm ghost", type: "button", text: "Keep my profile", onclick: function () { S.confirmDel = false; render(); } }))));
+    return w;
+  }
+  function deleteAll() {
+    Promise.all([B.del("members", S.uid), B.del("signups", S.uid), B.del("shifts", S.uid), B.del("attendance", S.uid), B.setPriv({})]).then(function () {
+      S.priv = null; S.confirmDel = false; S.draft = {}; S.cert = null; toast("Profile deleted"); location.hash = "register"; render();
+    }).catch(function () { toast("Could not delete. Try again."); });
+  }
+
+  /* ---------- views: organiser desk ---------- */
+  function cardView(v) {
+    var c = v.item.card || {}, rows = [["Area", c.area], ["Age and gender", [c.age, c.gender].filter(Boolean).join(", ")], ["Skills", list(c.skills)], ["Medical skills", list(c.med)], ["Blood group", c.blood && c.blood !== "Not sure" ? c.blood : ""],
+      ["Languages", c.langs], ["Free on", list(c.days) + (c.slots && c.slots.length ? " · " + list(c.slots) : "")], ["Experience", c.exp], ["Health note", c.limits], ["Emergency contact", [c.emName, c.emPhone].filter(Boolean).join(", ")]].filter(function (r) { return r[1]; });
+    if (!rows.length) return null;
+    return h("details", { class: "vcard" }, h("summary", { text: "What this volunteer shared" }), h("dl", {}, rows.map(function (r) { return [h("dt", { text: r[0] }), h("dd", { text: String(r[1]) })]; })));
+  }
+  function decide(s, v, val) {
+    if (val === "confirmed" && left(s) <= 0) { toast("This shift is full. Raise the number of volunteers or decline."); return; }
+    mutate("attendance", function (d) { d.decisions = d.decisions || {}; d.decisions[s.id + "__" + v.uid] = { s: val, at: v.item.at }; }).then(function () { toast(val === "confirmed" ? "Confirmed" : "Declined"); });
+  }
+  function setMark(s, uid, v) { mutate("attendance", function (d) { d.marks = d.marks || {}; d.marks[s.id + "__" + uid] = v; }).then(function () { toast(v > 0 ? "Hours signed off" : "Marked absent"); }); }
+  function viewOrganise() {
+    var w = h("div");
+    if (!S.me || !S.me.org) return h("div", {}, h("div", { class: "page-h" }, h("h1", { text: "Run shifts" }), h("p", { text: "Set up your group first, then you can post shifts and confirm volunteers." })),
+      h("p", { style: "margin-top:12px" }, h("a", { class: "btn", href: S.me ? "#join-group" : "#register", text: S.me ? "Start organising" : "Register" })));
+    var o = S.me.org, now = Date.now();
+    w.appendChild(h("div", { class: "page-h" }, h("h1", { text: "Run shifts" }), h("p", { text: "Post a task with a fixed time. Confirm who joins. Afterwards, sign off who turned up. Those hours become each volunteer's certificate." })));
+    var mine = D.shifts.filter(function (s) { return s.orgId === S.uid; });
+    var pend = []; mine.forEach(function (s) { if (!s.cancelled && endOf(s) > now) ofState(s.id, "pending").forEach(function (v) { pend.push({ s: s, v: v }); }); });
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Requests waiting for you" }), h("span", { text: String(pend.length) })));
+    if (!pend.length) w.appendChild(h("div", { class: "empty" }, "No requests right now."));
+    pend.sort(function (a, b) { return a.s.start - b.s.start; }).forEach(function (x) { w.appendChild(volRow(x.s, x.v, true)); });
+    w.appendChild(templates());
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "New shift" })));
+    var d = dr("shift"), errBox = h("div", { class: "err", role: "alert" }), today = new Date();
+    var min = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
+    var form = h("form", { class: "form", novalidate: true },
+      fld("shift", "title", "What is the task", { max: 70, ph: "e.g. Sort donated books for the library", full: true }),
+      fld("shift", "cause", "Cause", { options: CAUSES, def: (o.causes && o.causes[0]) || "Environment" }), fld("shift", "spots", "Volunteers needed", { type: "number", min: 1, maxv: 60, def: 6 }),
+      fld("shift", "date", "Date", { type: "date", min: min }), fld("shift", "time", "Start time", { type: "time", def: "09:00" }),
+      fld("shift", "hours", "Hours", { type: "number", min: 1, maxv: 8, def: 2 }), fld("shift", "place", "Meeting spot", { max: 60, ph: "e.g. Gate 2, Lakeview Park" }),
+      fld("shift", "area", "Area", { max: 50, def: S.me.area || "", full: true }),
+      fld("shift", "desc", "Details for volunteers", { tag: "textarea", max: 300, rows: 3, full: true, hint: "What to bring, what to wear, who to ask for" }),
+      fld("shift", "reward", "What volunteers get from you for this shift", { max: 80, full: true, def: list(o.perks), hint: "Shown on the shift and printed on the certificate. Leave blank for nothing extra." }),
+      h("div", { class: "full" }, errBox), h("div", { class: "full" }, h("button", { class: "btn", type: "submit", text: "Post shift" })));
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if ((d.title || "").trim().length < 6) { errBox.textContent = "Describe the task in a few words."; return; }
+      if (!d.date) { errBox.textContent = "Pick a date."; return; }
+      var p = d.date.split("-"), tp = (d.time || "09:00").split(":"), start = new Date(+p[0], +p[1] - 1, +p[2], +tp[0], +tp[1]).getTime();
+      if (start < Date.now()) { errBox.textContent = "That time has already passed. Pick a later date or time."; return; }
+      if (!(d.place || "").trim()) { errBox.textContent = "Add where volunteers should meet."; return; }
+      errBox.textContent = "";
+      var item = { title: d.title.trim(), cause: d.cause || "Environment", desc: (d.desc || "").trim(), place: d.place.trim(), area: (d.area || "").trim(), start: start, hours: Math.min(8, Math.max(1, parseInt(d.hours, 10) || 2)), spots: Math.min(60, Math.max(1, parseInt(d.spots, 10) || 6)), reward: (d.reward || "").trim(), created: Date.now() };
+      mutate("shifts", function (doc) { doc.items = doc.items || {}; doc.items["s" + Date.now().toString(36) + uid8()] = item; }).then(function () { S.draft.shift = null; toast("Shift posted"); render(); });
+    });
+    w.appendChild(form);
+    var up = mine.filter(function (s) { return endOf(s) > now && !s.cancelled; }).sort(function (a, b) { return a.start - b.start; });
+    var past = mine.filter(function (s) { return endOf(s) <= now || s.cancelled; }).sort(function (a, b) { return b.start - a.start; });
+    w.appendChild(h("div", { class: "sec-h" }, h("span", { text: "Your shifts" }), !mine.length ? h("button", { class: "link", type: "button", text: "Add 3 example shifts", onclick: addExamples }) : (mine.some(function (s) { return s.ex; }) ? h("button", { class: "link", type: "button", text: "Remove example shifts", onclick: removeExamples }) : null)));
+    if (!mine.length) w.appendChild(h("div", { class: "empty" }, h("b", { text: "You have not posted a shift yet." }), "Use the form above. Example shifts are labelled and can be removed in one click."));
+    up.concat(past).forEach(function (s) { w.appendChild(shiftBlock(s)); });
+    return w;
+  }
+  function volRow(s, v, withShift) {
+    var ctl = h("div", { class: "vctl" }), started = s.start <= Date.now();
+    if (s.cancelled) ctl.appendChild(h("span", { class: "st", text: "Shift cancelled" }));
+    else if (v.state === "pending") { ctl.appendChild(h("button", { class: "btn sm", type: "button", text: "Confirm", onclick: function () { decide(s, v, "confirmed"); } })); ctl.appendChild(h("button", { class: "btn sm ghost", type: "button", text: "Decline", onclick: function () { decide(s, v, "declined"); } })); }
+    else if (v.state === "declined") { ctl.appendChild(h("span", { class: "st bad", text: "Declined" })); ctl.appendChild(h("button", { class: "btn sm ghost", type: "button", text: "Confirm instead", onclick: function () { decide(s, v, "confirmed"); } })); }
+    else if (!started) { ctl.appendChild(h("span", { class: "st ok", text: "Confirmed" })); ctl.appendChild(h("button", { class: "btn sm ghost", type: "button", text: "Remove", onclick: function () { decide(s, v, "declined"); } })); }
+    else {
+      var hr = h("input", { type: "number", min: 0, max: 12, step: "0.5", value: String(v.mark > 0 ? v.mark : s.hours), "aria-label": "Hours for " + v.item.name });
+      ctl.appendChild(hr); ctl.appendChild(h("span", { class: "note", text: "hrs" }));
+      ctl.appendChild(h("button", { class: "btn sm", type: "button", text: v.mark > 0 ? "Update" : "Present", onclick: function () { var n = Math.round(parseFloat(hr.value) * 2) / 2; if (!(n > 0)) { toast("Enter hours above zero, or mark absent"); return; } setMark(s, v.uid, Math.min(12, n)); } }));
+      ctl.appendChild(h("button", { class: "btn sm ghost", type: "button", text: "Absent", onclick: function () { setMark(s, v.uid, 0); } }));
+      if (v.mark != null) ctl.appendChild(h("span", { class: "st " + (v.mark > 0 ? "ok" : "bad"), text: v.mark > 0 ? "Signed off" : "Absent" }));
+    }
+    var sub = (withShift ? s.title + " · " + fmtDay(s.start) + " · " : "") + (v.item.contact ? "Contact: " + v.item.contact : "Contact not shared");
+    return h("div", { class: "vol" }, h("div", { class: "n" }, v.item.name || "Volunteer", h("small", { text: sub })), ctl, cardView(v));
+  }
+  function addExamples() {
+    var base = new Date(); function at(off, hh) { var d = new Date(base); d.setHours(hh, 0, 0, 0); d.setDate(d.getDate() + off); return d.getTime(); }
+    var area = S.me.area || "", rw = list(S.me.org.perks);
+    var ex = [{ title: "Weekend clean-up of the park", cause: "Environment", desc: "Gloves and bags provided.", place: "Main gate", start: at(3, 8), hours: 2, spots: 10 }, { title: "Pack grocery boxes", cause: "Food", desc: "Sort rice, dal and oil into boxes.", place: "Community hall", start: at(5, 16), hours: 3, spots: 8 }, { title: "Reading hour for children", cause: "Children", desc: "Read aloud and help pick a book.", place: "Library room", start: at(8, 10), hours: 2, spots: 5 }];
+    mutate("shifts", function (doc) { doc.items = doc.items || {}; ex.forEach(function (e) { e.area = area; e.ex = 1; e.reward = rw; e.created = Date.now(); doc.items["s" + Date.now().toString(36) + uid8()] = e; }); }).then(function () { toast("Example shifts added"); });
+  }
+  function removeExamples() { mutate("shifts", function (doc) { Object.keys(doc.items || {}).forEach(function (k) { if (doc.items[k].ex) delete doc.items[k]; }); }).then(function () { toast("Examples removed"); }); }
+  function shiftBlock(s) {
+    var conf = ofState(s.id, "confirmed"), pend = ofState(s.id, "pending"), decl = ofState(s.id, "declined"), now = Date.now();
+    var blk = h("section", { class: "block" },
+      h("header", {}, h("h3", { text: s.title }), h("span", { class: "mono note", text: fmtDay(s.start) + " · " + fmtTime(s.start) + " · " + plural(s.hours, "hr") + " · " + conf.length + "/" + s.spots + " confirmed" + (s.cancelled ? " · cancelled" : "") })),
+      h("p", { class: "note", text: s.place + (s.area ? ", " + s.area : "") + " · " + s.cause + (s.reward ? " · volunteers get: " + s.reward : "") + (s.ex ? " · example" : "") }));
+    if (!conf.length && !pend.length && !decl.length) blk.appendChild(h("p", { class: "note", text: "No one has asked to join yet." }));
+    if (pend.length) { blk.appendChild(h("div", { class: "sub-h", text: "Waiting for you" })); pend.forEach(function (v) { blk.appendChild(volRow(s, v)); }); }
+    if (conf.length) { blk.appendChild(h("div", { class: "sub-h", text: "Confirmed" })); conf.forEach(function (v) { blk.appendChild(volRow(s, v)); }); }
+    if (decl.length) { blk.appendChild(h("div", { class: "sub-h", text: "Declined" })); decl.forEach(function (v) { blk.appendChild(volRow(s, v)); }); }
+    if (!s.cancelled && endOf(s) > now) {
+      if (S.cancelId === s.id) blk.appendChild(h("div", { class: "panel" }, h("p", { text: "Cancel this shift? Volunteers will see it as cancelled." }),
+        h("div", { class: "btns" }, h("button", { class: "btn sm danger", type: "button", text: "Yes, cancel shift", onclick: function () { mutate("shifts", function (doc) { doc.items[s.id].cancelled = true; }); S.cancelId = null; render(); } }), h("button", { class: "btn sm ghost", type: "button", text: "Keep it", onclick: function () { S.cancelId = null; render(); } }))));
+      else blk.appendChild(h("div", { class: "btns" }, h("button", { class: "btn sm ghost", type: "button", text: "Cancel shift", onclick: function () { S.cancelId = s.id; render(); } })));
+    }
+    return blk;
+  }
+
+  /* ---------- shell ---------- */
+  function renderHeader() {
+    var hd = $("#hdr"); hd.textContent = "";
+    var links = [["shifts", "Find shifts", 0], ["stories", "Stories", 0], ["orgs", "Organisations", 0]];
+    if (S.me && S.me.org) links.push(["organise", "Run shifts", 0]);
+    if (S.me) links.unshift(["home", "Dashboard", 0]);
+    if (!S.me) links.push(["register", "Register", 1]);
+
+    var TI = { home: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/>', find: '<circle cx="11" cy="11" r="6"/><path d="M16 16l5 5"/>', stories: '<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/>', run: '<path d="M6 21V4"/><path d="M6 5h12l-2 4 2 4H6"/>', me: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>', orgs: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6M15 15c3 0 6 1.5 6 5"/>', join: '<path d="M12 5v14M5 12h14"/>' };
+    var tabs = S.me ? [["home", "Home", "home"], ["shifts", "Find", "find"], ["stories", "Stories", "stories"], ["organise", "Run", "run"], ["profile", "Me", "me"]] : [["shifts", "Find", "find"], ["stories", "Stories", "stories"], ["orgs", "Groups", "orgs"], ["register", "Join", "join"]];
+    var tb = $("#tabbar"); tb.textContent = "";
+    tabs.forEach(function (t) { tb.appendChild(h("a", { href: "#" + t[0], "aria-current": S.view === t[0] ? "page" : null, html: '<svg viewBox="0 0 24 24" aria-hidden="true">' + TI[t[2]] + "</svg><span>" + t[1] + "</span>" })); });
+    hd.appendChild(h("a", { class: "brand", href: S.me ? "#home" : "#shifts", text: "Open Shifts" }));
+    hd.appendChild(h("nav", { class: "nav", "aria-label": "Main" }, links.concat(S.me ? [["profile", "", 2]] : []).map(function (l) { if (l[2] === 2) return h("a", { href: "#profile", class: "me-chip", "aria-label": "Your profile", "aria-current": S.view === "profile" ? "page" : null }, avatar(S.me, 30), h("span", { text: S.me.name.split(" ")[0] })); return h("a", { href: "#" + l[0], class: l[2] ? "cta" : "", text: l[1], "aria-current": S.view === l[0] ? "page" : null }); })));
+  }
+  function renderBanner() {
+    var b = $("#banner"); b.textContent = "";
+    if (S.mode === "preview") b.appendChild(h("div", { class: "banner", text: "Preview mode. Everything you add stays in this browser. Shifts and people marked as examples are made up, including the three past shifts in your record." }));
+    else if (!S.canWrite) b.appendChild(h("div", { class: "banner", text: "You can browse, but this account cannot save changes. Ask the page owner for Contributor access." }));
+    else if (S.slow && !S.ready) b.appendChild(h("div", { class: "banner", text: "Shared data is slow to load. Showing what we have." }));
+    $("#foot-note").textContent = S.mode === "live" ? "Details you choose to share with an organiser are visible to people who can open this page." : "Preview data lives only in this browser.";
+  }
+  var VIEWS = { home: viewHome, welcome: viewWelcome, shifts: viewShifts, stories: viewStories, orgs: viewOrgs, register: viewRegister, "join-volunteer": viewJoinVolunteer, "join-group": viewJoinGroup, profile: viewProfile, organise: viewOrganise };
+  function route() {
+    var v = (location.hash || (S.me ? "#home" : "#shifts")).slice(1);
+    if (!VIEWS[v]) v = "shifts";
+    if ((v === "home" || v === "welcome") && !S.me) v = "shifts";
+    if (v === "register" && S.me) v = "home";
+    if (v === "join-volunteer" && S.me && !S.editing) v = "profile";
+    if (v === "join-group" && S.me && S.me.org && !S.editing) v = "profile";
+    if (v === "profile" && !S.me) v = "register";
+    if (S.view !== v) { S.openId = null; S.cancelId = null; S.confirmDel = false; S.cert = null; if (v !== "join-volunteer" && v !== "join-group") { S.editing = false; S.draft.person = null; S.draft.group = null; } if (v !== "shifts") S.justJoined = false; }
+    if (S.view !== v) S.seen[v] = false;
+    S.view = v; render(); window.scrollTo(0, 0);
+  }
+  function render() {
+    renderHeader(); renderBanner();
+    var m = $("#main"); m.textContent = "";
+    if (!S.ready) { m.appendChild(h("p", { class: "empty", text: "Loading..." })); return; }
+    var n; try { n = VIEWS[S.view](); } catch (e) { console.error(e); n = h("p", { class: "empty", text: "Something went wrong showing this page. Reload to try again." }); }
+    m.appendChild(n); S.seen[S.view] = true; document.title = "Open Shifts";
+  }
+  function sched() {
+    if (S.t) return;
+    S.t = requestAnimationFrame(function () {
+      S.t = 0; var a = document.activeElement;
+      if (a && a.closest && a.closest("#main") && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) { S.dirty = true; return; }
+      render();
+    });
+  }
+  document.addEventListener("focusout", function () {
+    if (!S.dirty) return;
+    setTimeout(function () { var a = document.activeElement; if (!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) { S.dirty = false; render(); } }, 60);
+  });
+  window.addEventListener("hashchange", route);
+  $("#replay").addEventListener("click", function () { try { sessionStorage.removeItem("os-intro"); } catch (e) {} location.hash = ""; location.reload(); });
+
+  /* ---------- boot ---------- */
+  startIntro();
+  (async function boot() {
+    var lb = null; try { lb = await liveBackend(); } catch (e) { lb = null; }
+    B = lb || previewBackend();
+    S.uid = B.uid; S.mode = B.mode; S.canWrite = B.canWrite !== false; S.viewerName = B.viewerName || ""; S.isAdmin = !!B.isAdmin;
+    try { S.dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch (e) { S.dl = null; }
+    var slow = setTimeout(function () { S.slow = true; S.ready = true; sched(); }, 10000);
+    ["members", "shifts", "signups", "attendance", "stories"].forEach(function (n) {
+      B.sub(n, function (m) {
+        S[n] = m; if (n === "members") S.me = m[S.uid] || null;
+        D = derive();
+        if (n === "members" && !S.ready) {
+          S.ready = true; clearTimeout(slow);
+          if (S.me && $("#intro")) closeIntro();
+          route();
+        } else sched();
+      });
+    });
+    B.getPriv().then(function (p) { S.priv = p && Object.keys(p).length ? p : null; sched(); }, function () {});
+  })();
+})();
+</script>
